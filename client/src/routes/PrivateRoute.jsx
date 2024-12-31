@@ -4,7 +4,7 @@ import useApp from "../hooks/useApp.jsx"
 import { Navigate } from "react-router-dom"
 
 const PrivateRoute = ({ children }) => {
-  const { token } = useApp()
+  const token = localStorage.getItem("token")
 
   return (
     <Suspense fallback={<p>Loading...</p>}>

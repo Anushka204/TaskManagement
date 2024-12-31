@@ -7,6 +7,7 @@ import Home from "./Home.jsx"
 import Success from "./Success.jsx"
 import AppContextProvider from "./context/AppContext.jsx"
 import PrivateRoute from "./routes/PrivateRoute.jsx"
+import CycleView from "./CycleView.jsx"
 
 const router = createBrowserRouter([
   {
@@ -24,6 +25,14 @@ const router = createBrowserRouter([
   {
     path: "/success",
     element: <Success />,
+  },
+  {
+    path: "/cycle",
+    element: (
+      <PrivateRoute>
+        <CycleView />
+      </PrivateRoute>
+    ),
   },
 ])
 
