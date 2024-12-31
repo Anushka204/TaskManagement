@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
-import useApp from "./hooks/useApp"
-import { axiosClient } from "./services/apiClient"
+import useApp from "../hooks/useApp"
+import { axiosClient } from "../services/apiClient"
 
 const Home = () => {
   const { token, logout } = useApp()
