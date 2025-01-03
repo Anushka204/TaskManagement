@@ -4,7 +4,7 @@ import Sidebar from "../components/Sidebar/Sidebar.jsx"
 import Day from "../components/Day/Day.jsx"
 import { VIEWS } from "../constants/dashboard.js"
 import { getCycles, deleteCycle } from "../services/cycleService.js"
-import { deleteGoal } from "../services/goalService.js"
+import { deleteGoal, updateGoal } from "../services/goalService.js"
 
 const CycleView = () => {
   const [cycles, setCycles] = useState([])

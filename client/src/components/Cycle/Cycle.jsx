@@ -1,18 +1,9 @@
 import { useState } from "react"
 import CreateGoalModal from "../Goal/CreateGoalModal"
+import Goal from "../Goal/Goal"
 
 export default function Cycle({ cycle, deleteCycle, updateCycle, deleteGoal }) {
   const [showModal, setShowModal] = useState(false)
-
-  const renderGoal = (goal) => (
-    <div className='bg-neutral-300 rounded-lg p-2 my-2' key={goal._id}>
-      <h4 className='font-bold'>{goal.title}</h4>
-      <p>{goal.description}</p>
-      <button onClick={() => deleteGoal(goal)} className='text-red-500 text-sm'>
-        Delete
-      </button>
-    </div>
-  )
 
   return (
     <div className='bg-neutral-200 rounded-lg p-4'>
@@ -35,19 +26,43 @@ export default function Cycle({ cycle, deleteCycle, updateCycle, deleteGoal }) {
           <h4 className='font-bold'>Todo</h4>
           {cycle.goals
             .filter((goal) => goal.status === "todo")
-            .map((goal) => renderGoal(goal))}
+            .map((goal) => (
+              <Goal
+                key={goal._id}
+                goal={goal}
+                deleteGoal={deleteGoal}
+                cycle={cycle}
+                updateCycle={updateCycle}
+              />
+            ))}
         </div>
         <div className='w-full rounded-lg'>
           <h4 className='font-bold'>In Progress</h4>
           {cycle.goals
             .filter((goal) => goal.status === "in-progress")
-            .map((goal) => renderGoal(goal))}
+            .map((goal) => (
+              <Goal
+                key={goal._id}
+                goal={goal}
+                deleteGoal={deleteGoal}
+                cycle={cycle}
+                updateCycle={updateCycle}
+              />
+            ))}
         </div>
         <div className='w-full rounded-lg'>
           <h4 className='font-bold'>Completed</h4>
           {cycle.goals
             .filter((goal) => goal.status === "completed")
-            .map((goal) => renderGoal(goal))}
+            .map((goal) => (
+              <Goal
+                key={goal._id}
+                goal={goal}
+                deleteGoal={deleteGoal}
+                cycle={cycle}
+                updateCycle={updateCycle}
+              />
+            ))}
         </div>
       </div>
       <div>

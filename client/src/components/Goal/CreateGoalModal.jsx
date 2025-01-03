@@ -1,24 +1,53 @@
 import { useState } from "react"
-import { createGoal } from "../../services/goalService"
+import { createGoal, updateGoal } from "../../services/goalService"
 import { STATUS } from "../../constants/dashboard"
 
-export default function CreateGoalModal({ hideModal, cycle, updateCycle }) {
-  const [goal, setGoal] = useState({
-    title: "",
-    description: "",
-    tactics: [],
-    status: "todo",
-    cycleId: cycle._id,
-  })
+export default function CreateGoalModal({
+  hideModal,
+  cycle,
+  updateCycle,
+  currentGoal,
+}) {
+  const [goal, setGoal] = useState(
+    currentGoal || {
+      title: "",
+      description: "",
+      tactics: [],
+      status: "todo",
+      cycleId: cycle._id,
+    }
+  )
   const [goalError, setGoalError] = useState("")
+
+  const updateCurrentGoal = async (e) => {
+    e.preventDefault()
+    try {
+      const data = await updateGoal(goal)
+      updateCycle({
+        ...cycle,
+        goals: cycle.goals.map((g) => {
+          if (g._id === data.goal._id) {
+            return data.goal
+          }
+          return g
+        }),
+      })
+      setGoal({
+        title: "",
+        description: "",
+        tactics: [],
+        status: "todo",
+        cycleId: cycle._id,
+      })
+      hideModal()
+    } catch (err) {
+      setGoalError(err)
+    }
+  }
 
   const createNewGoal = async (e) => {
     e.preventDefault()
     try {
-      const token = localStorage.getItem("token")
-      if (!token) {
-        throw new Error("Unauthorized: No token found")
-      }
       const data = await createGoal(goal)
       updateCycle({ ...cycle, goals: [...cycle.goals, data.goal] })
       setGoal({
@@ -45,7 +74,10 @@ export default function CreateGoalModal({ hideModal, cycle, updateCycle }) {
   return (
     <div className='absolute top-0 left-0 w-screen h-screen flex justify-center items-center bg-[rgba(0,0,0,0.5]'>
       <div className='bg-white z-10 p-10 rounded-lg w-1/2'>
-        <form onSubmit={createNewGoal} className='flex flex-col gap-5'>
+        <form
+          onSubmit={currentGoal ? updateCurrentGoal : createNewGoal}
+          className='flex flex-col gap-5'
+        >
           <div>
             <input
               placeholder='Title'
