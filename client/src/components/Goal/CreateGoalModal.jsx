@@ -1,10 +1,15 @@
 import { useState } from "react"
 import { createGoal } from "../../services/goalService"
+import { STATUS } from "../../constants/dashboard"
 
 export default function CreateGoalModal({ hideModal, cycle, updateCycle }) {
-  const [title, setTitle] = useState("")
-  const [tactics, setTactics] = useState([])
-  const [description, setDescription] = useState("")
+  const [goal, setGoal] = useState({
+    title: "",
+    description: "",
+    tactics: [],
+    status: "todo",
+    cycleId: cycle._id,
+  })
   const [goalError, setGoalError] = useState("")
 
   const createNewGoal = async (e) => {
@@ -14,11 +19,15 @@ export default function CreateGoalModal({ hideModal, cycle, updateCycle }) {
       if (!token) {
         throw new Error("Unauthorized: No token found")
       }
-      const goal = { title, description, tactics, cycleId: cycle._id }
       const data = await createGoal(goal)
       updateCycle({ ...cycle, goals: [...cycle.goals, data.goal] })
-      setTitle("")
-      setDescription("")
+      setGoal({
+        title: "",
+        description: "",
+        tactics: [],
+        status: "todo",
+        cycleId: cycle._id,
+      })
       hideModal()
     } catch (err) {
       setGoalError(err)
@@ -26,10 +35,11 @@ export default function CreateGoalModal({ hideModal, cycle, updateCycle }) {
   }
 
   const addTactic = () => {
-    setTactics((prevTactics) => [
-      ...prevTactics,
-      { title: "", description: "" },
-    ])
+    const updatedGoal = {
+      ...goal,
+      tactics: [...goal.tactics, { title: "", description: "" }],
+    }
+    setGoal(updatedGoal)
   }
 
   return (
@@ -41,8 +51,8 @@ export default function CreateGoalModal({ hideModal, cycle, updateCycle }) {
               placeholder='Title'
               type='text'
               className='bg-neutral-100 rounded-lg p-2 w-full'
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              value={goal.title}
+              onChange={(e) => setGoal({ ...goal, title: e.target.value })}
               required
             />
           </div>
@@ -51,11 +61,25 @@ export default function CreateGoalModal({ hideModal, cycle, updateCycle }) {
               cols={20}
               placeholder='Description'
               className='bg-neutral-100 rounded-lg p-2 w-full'
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              value={goal.description}
+              onChange={(e) =>
+                setGoal({ ...goal, description: e.target.value })
+              }
             />
           </div>
-          {tactics.map((tactic, index) => (
+          <div>
+            <select
+              value={goal.status}
+              onChange={(e) => setGoal({ ...goal, status: e.target.value })}
+            >
+              {STATUS.map((status) => (
+                <option key={status.value} value={status.value}>
+                  {status.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          {goal.tactics.map((tactic, index) => (
             <div key={index}>
               <input
                 placeholder='Tactic Title'
@@ -63,9 +87,9 @@ export default function CreateGoalModal({ hideModal, cycle, updateCycle }) {
                 className='bg-neutral-100 rounded-lg p-2 w-full'
                 value={tactic.title}
                 onChange={(e) => {
-                  const newTactics = [...tactics]
+                  const newTactics = [...goal.tactics]
                   newTactics[index].title = e.target.value
-                  setTactics(newTactics)
+                  setGoal({ ...goal, tactics: newTactics })
                 }}
                 required
               />
@@ -75,9 +99,9 @@ export default function CreateGoalModal({ hideModal, cycle, updateCycle }) {
                 className='bg-neutral-100 rounded-lg p-2 w-full'
                 value={tactic.description}
                 onChange={(e) => {
-                  const newTactics = [...tactics]
+                  const newTactics = [...goal.tactics]
                   newTactics[index].description = e.target.value
-                  setTactics(newTactics)
+                  setGoal({ ...goal, tactics: newTactics })
                 }}
               />
             </div>

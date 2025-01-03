@@ -4,7 +4,7 @@ import Tactic from "../models/Tactic.js"
 
 export const createGoal = async (req, res) => {
   try {
-    const { cycleId, title, description, tactics } = req.body
+    const { cycleId, title, description, tactics, status } = req.body
 
     if (!cycleId || !title) {
       return res
@@ -24,7 +24,7 @@ export const createGoal = async (req, res) => {
       cycleId,
       title,
       description,
-      status: "todo",
+      status,
     })
 
     await newGoal.save()
