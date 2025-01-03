@@ -1,24 +1,22 @@
 import { useEffect } from "react"
 import { useNavigate } from "react-router-dom"
+import useAuthToken from "../hooks/useAuthToken"
 
 const Success = () => {
   const navigate = useNavigate()
+  const urlParams = new URLSearchParams(window.location.search)
+  const token = urlParams.get("token")
+
+  const { login } = useAuthToken()
 
   useEffect(() => {
-    // Extract the token from the URL
-    const urlParams = new URLSearchParams(window.location.search)
-    const token = urlParams.get("token")
-
     if (token) {
-      // Store the token in localStorage or other state management
-      localStorage.setItem("token", token)
-      // Redirect to the Cycle View page after storing the token
-      navigate("/cycle")
+      login(token)
+      navigate("/dashboard")
     } else {
-      // Redirect to login if the token is not found
       navigate("/login")
     }
-  }, [navigate])
+  }, [token])
 
   return (
     <div>
