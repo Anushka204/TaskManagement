@@ -55,3 +55,24 @@ export const deleteCycle = async (req, res) => {
     res.status(500).json({ message: error.message })
   }
 }
+
+export const updateCycle = async (req, res) => {
+  try {
+    const cycleId = req.params.id
+    const cycle = await Cycle.findOneAndUpdate(
+      { _id: cycleId, userId: req.user.userId },
+      req.body,
+      { new: true }
+    )
+
+    if (!cycle) {
+      return res
+        .status(404)
+        .json({ message: "Cycle not found or not authorized" })
+    }
+
+    res.status(200).json(cycle)
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+}

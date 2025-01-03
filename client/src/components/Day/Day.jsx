@@ -28,6 +28,17 @@ export default function Day({ cycle }) {
     fetchTasks()
   }, [])
 
+  if (cycle.goals.length === 0) {
+    return (
+      <div className='bg-neutral-200 rounded-lg p-4'>
+        <h2 className='text-xl uppercase flex items-center'>Today</h2>
+        <p className='text-neutral-400'>
+          No goals found. Please create a goal to get started.
+        </p>
+      </div>
+    )
+  }
+
   return (
     <div className='bg-neutral-200 rounded-lg p-4'>
       <h2 className='text-xl uppercase flex items-center'>Today</h2>

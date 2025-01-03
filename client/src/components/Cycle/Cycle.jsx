@@ -1,13 +1,16 @@
 import { useState } from "react"
 import CreateGoalModal from "../Goal/CreateGoalModal"
 
-export default function Cycle({ cycle, deleteCycle }) {
+export default function Cycle({ cycle, deleteCycle, updateCycle, deleteGoal }) {
   const [showModal, setShowModal] = useState(false)
 
   const renderGoal = (goal) => (
     <div className='bg-neutral-300 rounded-lg p-2 my-2' key={goal._id}>
       <h4 className='font-bold'>{goal.title}</h4>
       <p>{goal.description}</p>
+      <button onClick={() => deleteGoal(goal)} className='text-red-500 text-sm'>
+        Delete
+      </button>
     </div>
   )
 
@@ -56,7 +59,8 @@ export default function Cycle({ cycle, deleteCycle }) {
         </button>
         {showModal && (
           <CreateGoalModal
-            cycleId={cycle._id}
+            cycle={cycle}
+            updateCycle={updateCycle}
             hideModal={() => setShowModal(false)}
           ></CreateGoalModal>
         )}

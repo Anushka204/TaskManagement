@@ -24,7 +24,7 @@ export const createGoal = async (req, res) => {
       cycleId,
       title,
       description,
-      status: "todo"
+      status: "todo",
     })
 
     await newGoal.save()
@@ -51,6 +51,31 @@ export const createGoal = async (req, res) => {
     res
       .status(201)
       .json({ message: "Goal created and added to cycle", goal: newGoal })
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+}
+
+export const deleteGoal = async (req, res) => {
+  try {
+    const goalId = req.params.id
+    const goal = await Goal.findOneAndDelete({
+      _id: goalId,
+      userId: req.user.userId,
+    })
+
+    await Cycle.findOneAndUpdate(
+      { _id: goal.cycleId, userId: req.user.userId },
+      { $pull: { goals: goalId } },
+      { new: true }
+    )
+
+    if (!goal) {
+      return res
+        .status(404)
+        .json({ message: "Goal not found or not authorized" })
+    }
+    res.status(200).json({ message: "Goal deleted successfully" })
   } catch (error) {
     res.status(500).json({ message: error.message })
   }

@@ -4,6 +4,7 @@ import Sidebar from "../components/Sidebar/Sidebar.jsx"
 import Day from "../components/Day/Day.jsx"
 import { VIEWS } from "../constants/dashboard.js"
 import { getCycles, deleteCycle } from "../services/cycleService.js"
+import { deleteGoal } from "../services/goalService.js"
 
 const CycleView = () => {
   const [cycles, setCycles] = useState([])
@@ -44,10 +45,39 @@ const CycleView = () => {
     }
   }
 
+  const updateCycle = async (updatedCycle) => {
+    try {
+      const updatedCycles = cycles.map((c) =>
+        c._id === updatedCycle._id ? { ...updatedCycle } : { ...c }
+      )
+      setCycles(updatedCycles)
+      setData(updatedCycle)
+    } catch (err) {
+      setError(err.message)
+    }
+  }
+
+  const removeGoalAndUpdateCycle = async (goal) => {
+    await deleteGoal(goal._id)
+    const updatedCycle = { ...cycles.find((c) => c._id === goal.cycleId) }
+
+    updateCycle({
+      ...updatedCycle,
+      goals: [...updatedCycle.goals.filter((g) => g._id !== goal._id)],
+    })
+  }
+
   const renderView = () => {
     switch (view) {
       case VIEWS.CYCLE:
-        return <Cycle cycle={data} deleteCycle={removeCycle} />
+        return (
+          <Cycle
+            deleteGoal={removeGoalAndUpdateCycle}
+            cycle={data}
+            deleteCycle={removeCycle}
+            updateCycle={updateCycle}
+          />
+        )
       default:
         return <Day cycle={cycles[0]}></Day>
     }

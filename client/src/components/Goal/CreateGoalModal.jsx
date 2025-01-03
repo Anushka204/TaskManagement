@@ -1,47 +1,41 @@
 import { useState } from "react"
-import axios from "axios"
+import { createGoal } from "../../services/goalService"
 
-export default function CreateGoalModal({ hideModal, cycleId }) {
+export default function CreateGoalModal({ hideModal, cycle, updateCycle }) {
   const [title, setTitle] = useState("")
   const [tactics, setTactics] = useState([])
   const [description, setDescription] = useState("")
   const [goalError, setGoalError] = useState("")
 
-  const createGoal = async (e) => {
+  const createNewGoal = async (e) => {
     e.preventDefault()
     try {
       const token = localStorage.getItem("token")
       if (!token) {
         throw new Error("Unauthorized: No token found")
       }
-
-      const response = await axios.post(
-        "http://localhost:3000/api/goals",
-        { title, description, cycleId, tactics },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      )
+      const goal = { title, description, tactics, cycleId: cycle._id }
+      const data = await createGoal(goal)
+      updateCycle({ ...cycle, goals: [...cycle.goals, data.goal] })
       setTitle("")
       setDescription("")
-      alert("Goal created successfully!")
       hideModal()
     } catch (err) {
-      setGoalError(err.response?.data?.message || "Failed to create goal")
+      setGoalError(err)
     }
   }
 
   const addTactic = () => {
-    setTactics((prevTactics) => [...prevTactics, { title: "", description: "" }])
+    setTactics((prevTactics) => [
+      ...prevTactics,
+      { title: "", description: "" },
+    ])
   }
 
   return (
     <div className='absolute top-0 left-0 w-screen h-screen flex justify-center items-center bg-[rgba(0,0,0,0.5]'>
       <div className='bg-white z-10 p-10 rounded-lg w-1/2'>
-        <form onSubmit={createGoal} className='flex flex-col gap-5'>
+        <form onSubmit={createNewGoal} className='flex flex-col gap-5'>
           <div>
             <input
               placeholder='Title'
@@ -88,7 +82,9 @@ export default function CreateGoalModal({ hideModal, cycleId }) {
               />
             </div>
           ))}
-          <button className='w-fit font-bold' onClick={addTactic}>+ Add Tactic</button>
+          <button className='w-fit font-bold' onClick={addTactic}>
+            + Add Tactic
+          </button>
           <div className='flex justify-between'>
             <button
               type='submit'
