@@ -1,7 +1,9 @@
 import { useState } from "react"
 import axios from "axios"
+import useAuthToken from "../../hooks/useAuthToken"
+import { useNavigate } from "react-router-dom"
 
-export default function CreateCycleModal({ hideModal }) {
+export default function CreateCycleModal({ hideModal, setCycles }) {
   const [newCycle, setNewCycle] = useState({
     title: "",
     description: "",
@@ -10,17 +12,18 @@ export default function CreateCycleModal({ hideModal }) {
   })
 
   const [error, setError] = useState(null)
+  const { token, logout } = useAuthToken()
+
+  const navigate = useNavigate()
 
   const handleCreateCycle = async (e) => {
     e.preventDefault()
     try {
-      const token = localStorage.getItem("token")
-
       if (!token) {
-        throw new Error("Unauthorized: No token found")
+        logout()
+        navigate("/")
       }
 
-      // Send the new cycle data to the backend
       const response = await axios.post(
         "http://localhost:3000/api/cycles",
         newCycle,
@@ -32,6 +35,8 @@ export default function CreateCycleModal({ hideModal }) {
         }
       )
 
+      setCycles(response.data.cycles || [])
+
       setNewCycle({ title: "", description: "", startDate: "", endDate: "" })
       alert("Cycle created successfully!")
     } catch (err) {
@@ -42,7 +47,10 @@ export default function CreateCycleModal({ hideModal }) {
   return (
     <div className='absolute top-0 left-0 w-screen h-screen flex justify-center items-center bg-[rgba(0,0,0,0.5]'>
       <div className='bg-white z-10 p-10 rounded-lg w-1/2'>
-        <form onSubmit={handleCreateCycle} className='flex flex-col gap-5'>
+        <form
+          onSubmit={handleCreateCycle}
+          className='flex flex-col gap-5 text-neutral-900'
+        >
           <div>
             <input
               placeholder='Title'
@@ -58,7 +66,7 @@ export default function CreateCycleModal({ hideModal }) {
           <div>
             <textarea
               className='bg-neutral-100 rounded-lg p-2 w-full'
-              placeholder='Description'
+              placeholder='Description (Optional)'
               value={newCycle.description}
               onChange={(e) =>
                 setNewCycle({ ...newCycle, description: e.target.value })

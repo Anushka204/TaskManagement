@@ -3,7 +3,6 @@ import { Strategy as GoogleStrategy } from "passport-google-oauth20"
 import configs from "../config/config.js"
 import User from "../models/User.js"
 
-// Serialize and Deserialize User for session management
 passport.serializeUser((user, done) => {
   done(null, user.id)
 })
@@ -14,13 +13,12 @@ passport.deserializeUser((id, done) => {
   })
 })
 
-// Use GoogleStrategy for OAuth 2.0 authentication
 passport.use(
   new GoogleStrategy(
     {
       clientID: configs.googleAuthClientId,
       clientSecret: configs.googleAuthClientSecret,
-      callbackURL: configs.googleAuthServerCallbackURL, // Update with your callback URL
+      callbackURL: configs.googleAuthServerCallbackURL,
     },
     async (accessToken, refreshToken, profile, done) => {
       try {

@@ -19,7 +19,6 @@ const CycleView = () => {
           throw new Error("Unauthorized: No token found")
         }
 
-        // Replace with your backend API URL
         const response = await axios.get("http://localhost:3000/api/cycles", {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -48,7 +47,7 @@ const CycleView = () => {
   const renderView = () => {
     switch (view) {
       case VIEWS.CYCLE:
-        return <Cycle cycle={data} />
+        return <Cycle cycle={data} setCycles={setCycles} />
       default:
         return <Day cycle={cycles[0]}></Day>
     }
@@ -71,7 +70,11 @@ const CycleView = () => {
       error={error}
       setCycles={setCycles}
     >
-      {renderView()}
+      {cycles.length > 0 ? (
+        renderView()
+      ) : (
+        <div>No cycles found. Create one to get started!</div>
+      )}
     </Sidebar>
   )
 }

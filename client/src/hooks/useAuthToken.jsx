@@ -14,26 +14,17 @@ const decodeToken = (token) => {
   }
 }
 
-const isTokenExpired = (token) => {
-  const payload = decodeToken(token)
-  if (!payload || !payload.exp) return true
-  return payload.exp * 1000 < Date.now()
-}
+// const isTokenExpired = (token) => {
+//   const payload = decodeToken(token)
+//   console.log(payload)
+//   if (!payload || !payload.exp) return true
+//   return payload.exp * 1000 < Date.now()
+// }
 
 const useAuthToken = () => {
   const [token, setAuthToken] = useState(getToken())
   const [isAuthenticated, setIsAuthenticated] = useState(!!token)
 
-  useEffect(() => {
-    if (token) {
-      const expired = isTokenExpired(token)
-      if (expired) {
-        removeToken()
-        setAuthToken(null)
-        setIsAuthenticated(false)
-      }
-    }
-  }, [token])
 
   const login = (newToken) => {
     setToken(newToken)
