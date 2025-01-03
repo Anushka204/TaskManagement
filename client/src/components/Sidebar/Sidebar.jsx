@@ -1,11 +1,6 @@
 import { useState } from "react"
 import CreateCycleModal from "../Cycle/CreateCycleModal"
-
-export const VIEWS = {
-  CYCLE: "cycle",
-  DAY: "DAY",
-  WEEK: "WEEK",
-}
+import { VIEWS } from "../../constants/dashboard"
 
 export default function Sidebar({
   children,
@@ -55,10 +50,15 @@ export default function Sidebar({
         {showModal && (
           <CreateCycleModal
             setCycles={setCycles}
+            cycles={cycles}
+            switchCycleView={switchView}
             hideModal={() => setShowModal(false)}
           ></CreateCycleModal>
         )}
-        <button className='mt-10 text-xs' onClick={() => switchView(VIEWS.DAY, cycles[0])}>
+        <button
+          className='mt-10 text-xs'
+          onClick={() => switchView(VIEWS.DAY, cycles[0])}
+        >
           Switch to daily view
         </button>
       </div>

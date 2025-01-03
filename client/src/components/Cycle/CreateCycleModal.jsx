@@ -2,8 +2,9 @@ import { useState } from "react"
 import axios from "axios"
 import useAuthToken from "../../hooks/useAuthToken"
 import { useNavigate } from "react-router-dom"
+import { VIEWS } from '../../constants/dashboard'
 
-export default function CreateCycleModal({ hideModal, setCycles }) {
+export default function CreateCycleModal({ hideModal, setCycles, cycles, switchCycleView }) {
   const [newCycle, setNewCycle] = useState({
     title: "",
     description: "",
@@ -35,9 +36,10 @@ export default function CreateCycleModal({ hideModal, setCycles }) {
         }
       )
 
-      setCycles(response.data.cycles || [])
-
+      setCycles([...cycles, response.data])
       setNewCycle({ title: "", description: "", startDate: "", endDate: "" })
+      switchCycleView(VIEWS.CYCLE, response.data)
+      hideModal()
       alert("Cycle created successfully!")
     } catch (err) {
       setError(err.response?.data?.message || "Failed to create cycle")

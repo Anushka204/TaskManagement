@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react"
 import axios from "axios"
 import Cycle from "../components/Cycle/Cycle"
-import Sidebar, { VIEWS } from "../components/Sidebar/Sidebar.jsx"
+import Sidebar from "../components/Sidebar/Sidebar.jsx"
 import Day from "../components/Day/Day.jsx"
+import { VIEWS } from "../constants/dashboard.js"
 
 const CycleView = () => {
   const [cycles, setCycles] = useState([])
