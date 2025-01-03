@@ -1,9 +1,10 @@
 import Goal from "../models/Goal.js"
 import Cycle from "../models/Cycle.js"
+import Tactic from "../models/Tactic.js"
 
 export const createGoal = async (req, res) => {
   try {
-    const { cycleId, title, description } = req.body
+    const { cycleId, title, description, tactics } = req.body
 
     if (!cycleId || !title) {
       return res
@@ -23,8 +24,25 @@ export const createGoal = async (req, res) => {
       cycleId,
       title,
       description,
+      status: "todo"
     })
 
+    await newGoal.save()
+
+    const createdTactics = await Promise.all(
+      tactics.map(async (tactic) => {
+        const newTactic = new Tactic({
+          goalId: newGoal._id,
+          title: tactic.title,
+          description: tactic.description,
+          userId: req.user.userId,
+        })
+        await newTactic.save()
+        return newTactic._id
+      })
+    )
+
+    newGoal.tactics = createdTactics
     await newGoal.save()
 
     cycle.goals.push(newGoal._id)

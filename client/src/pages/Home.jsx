@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import useApp from "../hooks/useApp"
+import useApp from "../hooks/useAuthToken"
 import { axiosClient } from "../services/apiClient"
 
 const Home = () => {

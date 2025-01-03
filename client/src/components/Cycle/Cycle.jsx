@@ -1,84 +1,77 @@
 import { useState } from "react"
-import Goal from "../Goal/Goal"
+import CreateGoalModal from "../Goal/CreateGoalModal"
 
 export default function Cycle({ cycle }) {
-  const [title, setTitle] = useState("")
-  const [description, setDescription] = useState("")
-  const [goalError, setGoalError] = useState("")
-
-  const createGoal = async (e) => {
-    e.preventDefault()
-    try {
-      const token = localStorage.getItem("token")
-      if (!token) {
-        throw new Error("Unauthorized: No token found")
-      }
-
-      const response = await axios.post(
-        "http://localhost:3000/api/goals",
-        { title, description, cycleId: cycles[0]._id },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      )
-      setTitle("")
-      setDescription("")
-      alert("Goal created successfully!")
-    } catch (err) {
-      setGoalError(err.response?.data?.message || "Failed to create goal")
-    }
-  }
+  const [showModal, setShowModal] = useState(false)
 
   return (
-    <li key={cycle._id}>
-      <h2>{cycle.title}</h2>
-      <p>{cycle.description}</p>
-      <p>
-        <strong>Start Date:</strong>{" "}
-        {new Date(cycle.startDate).toLocaleDateString()}
-      </p>
-      <p>
-        <strong>End Date:</strong>{" "}
-        {new Date(cycle.endDate).toLocaleDateString()}
-      </p>
-      <p>
-        <strong>Goals:</strong> {cycle.goals.length}
-      </p>
-      <div>
-        <h2>Goals</h2>
-        <ul>
-          {cycle.goals.map((goal) => (
-            <Goal key={goal._id} goal={goal}></Goal>
-          ))}
-        </ul>
+    <div className='bg-neutral-200 rounded-lg p-4'>
+      <h2 className='text-xl uppercase flex items-center'>
+        {cycle.title}
+        <span className='text-neutral-400 text-sm ml-3'>
+          ({new Date(cycle.startDate).toLocaleDateString()}-
+          {new Date(cycle.endDate).toLocaleDateString()})
+        </span>
+      </h2>
+      <p className='text-neutral-400'>{cycle.description}</p>
+      <div className='w-full grid grid-cols-3 gap-3'>
+        <div className='w-full rounded-lg'>
+          <h4 className='font-bold'>Todo</h4>
+          {cycle.goals
+            .filter((goal) => goal.status === "todo")
+            .map((goal) => (
+              <div
+                className='bg-neutral-300 rounded-lg p-2 my-2'
+                key={goal._id}
+              >
+                <h4 className='font-bold'>{goal.title}</h4>
+                <p>{goal.description}</p>
+              </div>
+            ))}
+        </div>
+        <div className='w-full rounded-lg'>
+          <h4 className='font-bold'>In Progress</h4>
+          {cycle.goals
+            .filter((goal) => goal.status === "in-progress")
+            .map((goal) => (
+              <div
+                className='bg-neutral-300 rounded-lg p-2 my-2'
+                key={goal._id}
+              >
+                <h4 className='font-bold'>{goal.title}</h4>
+                <p>{goal.description}</p>
+              </div>
+            ))}
+        </div>
+        <div className='w-full rounded-lg'>
+          <h4 className='font-bold'>Completed</h4>
+          {cycle.goals
+            .filter((goal) => goal.status === "completed")
+            .map((goal) => (
+              <div
+                className='bg-neutral-300 rounded-lg p-2 my-2'
+                key={goal._id}
+              >
+                <h4 className='font-bold'>{goal.title}</h4>
+                <p>{goal.description}</p>
+              </div>
+            ))}
+        </div>
       </div>
       <div>
-        <h2>Create New Goal</h2>
-        <form onSubmit={createGoal}>
-          <div>
-            <label>Title:</label>
-            <input
-              type='text'
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              required
-            />
-          </div>
-          <div>
-            <label>Description:</label>
-            <input
-              type='text'
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-          </div>
-          <button type='submit'>Create Goal</button>
-          {goalError && <p style={{ color: "red" }}>{goalError}</p>}
-        </form>
+        <button
+          onClick={() => setShowModal(true)}
+          className='mt-5 px-4 py-2 bg-blue-500 hover:bg-blue-600 hover:drop-shadow-lg transition-all text-white font-bold rounded-lg'
+        >
+          Create New Goal
+        </button>
+        {showModal && (
+          <CreateGoalModal
+            cycleId={cycle._id}
+            hideModal={() => setShowModal(false)}
+          ></CreateGoalModal>
+        )}
       </div>
-    </li>
+    </div>
   )
 }

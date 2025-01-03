@@ -3,7 +3,13 @@ import Cycle from "../models/Cycle.js"
 export const getCycles = async (req, res) => {
   try {
     const userId = req.user.userId
-    const cycles = await Cycle.find({ userId }).populate("goals")
+    const cycles = await Cycle.find({ userId }).populate({
+      path: "goals",
+      populate: {
+        path: "tactics",
+        model: "Tactic",
+      },
+    })
     res.status(200).json(cycles)
   } catch (error) {
     res.status(500).json({ message: error.message })

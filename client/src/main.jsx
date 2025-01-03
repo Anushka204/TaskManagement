@@ -7,7 +7,7 @@ import Home from "./pages/Home.jsx"
 import Success from "./pages/Success.jsx"
 import AppContextProvider from "./context/AppContext.jsx"
 import PrivateRoute from "./routes/PrivateRoute.jsx"
-import CycleView from "./CycleView.jsx"
+import Dashboard from "./pages/Dashboard.jsx"
 
 const router = createBrowserRouter([
   {
@@ -27,10 +27,10 @@ const router = createBrowserRouter([
     element: <Success />,
   },
   {
-    path: "/cycle",
+    path: "/dashboard",
     element: (
       <PrivateRoute>
-        <CycleView />
+        <Dashboard />
       </PrivateRoute>
     ),
   },

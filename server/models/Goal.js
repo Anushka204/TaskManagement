@@ -9,7 +9,11 @@ const goalSchema = new mongoose.Schema({
   },
   title: { type: String, required: true },
   description: { type: String },
-  isCompleted: { type: Boolean, default: false },
+  status: {
+    type: String,
+    enum: ["backlog", "todo", "in-progress", "completed"],
+    default: "todo",
+  },
   tactics: [{ type: mongoose.Schema.Types.ObjectId, ref: "Tactic" }],
   createdAt: { type: Date, default: Date.now },
 })
