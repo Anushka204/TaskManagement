@@ -41,7 +41,7 @@ export const deleteCycle = async (req, res) => {
     const cycleId = req.params.id
     const cycle = await Cycle.findOneAndDelete({
       _id: cycleId,
-      userId: req.user.id,
+      userId: req.user.userId,
     })
 
     if (!cycle) {

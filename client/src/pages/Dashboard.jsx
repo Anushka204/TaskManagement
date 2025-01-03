@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react"
-import axios from "axios"
 import Cycle from "../components/Cycle/Cycle"
 import Sidebar from "../components/Sidebar/Sidebar.jsx"
 import Day from "../components/Day/Day.jsx"
 import { VIEWS } from "../constants/dashboard.js"
-import { getCycles } from "../services/cycleService.js"
+import { getCycles, deleteCycle } from "../services/cycleService.js"
 
 const CycleView = () => {
   const [cycles, setCycles] = useState([])
@@ -34,10 +33,21 @@ const CycleView = () => {
     setData(d)
   }
 
+  const removeCycle = async (cycle) => {
+    try {
+      await deleteCycle(cycle._id)
+      const updatedCycles = cycles.filter((c) => c._id !== cycle._id)
+      setCycles(updatedCycles)
+      switchView(VIEWS.DAY)
+    } catch (err) {
+      setError(err.message)
+    }
+  }
+
   const renderView = () => {
     switch (view) {
       case VIEWS.CYCLE:
-        return <Cycle cycle={data} setCycles={setCycles} />
+        return <Cycle cycle={data} deleteCycle={removeCycle} />
       default:
         return <Day cycle={cycles[0]}></Day>
     }
