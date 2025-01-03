@@ -1,14 +1,18 @@
 import "./App.css"
+import { useEffect } from 'react'
 import { useNavigate } from "react-router-dom"
 import useAuthToken from "./hooks/useAuthToken"
 
 function App() {
   const { isAuthenticated } = useAuthToken()
+
   const navigate = useNavigate()
 
-  if (isAuthenticated) {
-    navigate("/cycle")
-  }
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/dashboard")
+    }
+  }, [isAuthenticated])
 
   const loginWithGoogle = async () => {
     window.location.href = `http://localhost:3000/auth/google`
