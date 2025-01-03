@@ -4,6 +4,7 @@ import Cycle from "../components/Cycle/Cycle"
 import Sidebar from "../components/Sidebar/Sidebar.jsx"
 import Day from "../components/Day/Day.jsx"
 import { VIEWS } from "../constants/dashboard.js"
+import { getCycles } from "../services/cycleService.js"
 
 const CycleView = () => {
   const [cycles, setCycles] = useState([])
@@ -13,20 +14,8 @@ const CycleView = () => {
   useEffect(() => {
     const fetchCycles = async () => {
       try {
-        setLoading(true)
-        const token = localStorage.getItem("token")
-
-        if (!token) {
-          throw new Error("Unauthorized: No token found")
-        }
-
-        const response = await axios.get("http://localhost:3000/api/cycles", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-
-        setCycles(response.data)
+        const data = await getCycles()
+        setCycles(data)
       } catch (err) {
         setError(err.message)
       } finally {

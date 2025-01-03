@@ -2,8 +2,8 @@ import axios from "axios"
 
 const token = localStorage.getItem("token") || null
 
-export const axiosClient = axios.create({
-  baseURL: "http://localhost:3000/auth",
+export const apiClient = axios.create({
+  baseURL: "http://localhost:3000/api",
   headers: {
     Accept: "application/json",
     "Content-Type": "application/json",
@@ -11,7 +11,7 @@ export const axiosClient = axios.create({
   },
 })
 
-axiosClient.interceptors.response.use(
+apiClient.interceptors.response.use(
   function (response) {
     return response
   },

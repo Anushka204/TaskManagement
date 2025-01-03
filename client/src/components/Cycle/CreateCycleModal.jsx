@@ -3,6 +3,7 @@ import axios from "axios"
 import useAuthToken from "../../hooks/useAuthToken"
 import { useNavigate } from "react-router-dom"
 import { VIEWS } from '../../constants/dashboard'
+import { createCycle } from '../../services/cycleService'
 
 export default function CreateCycleModal({ hideModal, setCycles, cycles, switchCycleView }) {
   const [newCycle, setNewCycle] = useState({
@@ -25,20 +26,11 @@ export default function CreateCycleModal({ hideModal, setCycles, cycles, switchC
         navigate("/")
       }
 
-      const response = await axios.post(
-        "http://localhost:3000/api/cycles",
-        newCycle,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      )
+      const data = await createCycle(newCycle)
 
-      setCycles([...cycles, response.data])
+      setCycles([...cycles, data])
       setNewCycle({ title: "", description: "", startDate: "", endDate: "" })
-      switchCycleView(VIEWS.CYCLE, response.data)
+      switchCycleView(VIEWS.CYCLE, data)
       hideModal()
       alert("Cycle created successfully!")
     } catch (err) {
