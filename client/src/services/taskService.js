@@ -1,7 +1,7 @@
 import { apiClient } from "./apiClient"
 
-export const getTasks = async () => {
-  const response = await apiClient.get("/tasks")
+export const getTasks = async (dueDate) => {
+  const response = await apiClient.get("/tasks", { params: { dueDate } })
   return response.data
 }
 

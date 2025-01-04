@@ -4,11 +4,18 @@ import Goal from "../models/Goal.js"
 export const getTasks = async (req, res) => {
   try {
     const userId = req.user.userId
-    const { status, sortBy = "createdAt", order = "asc" } = req.query
+    const { dueDate, sortBy = "createdAt", order = "asc" } = req.query
+    const startOfDay = new Date(dueDate)
+    startOfDay.setHours(0, 0, 0, 0)
+    const endOfDay = new Date(dueDate)
+    endOfDay.setHours(23, 59, 59, 999)
 
     const sortOrder = order === "desc" ? -1 : 1
 
-    const tasks = await Task.find({ userId }).sort({ [sortBy]: sortOrder })
+    const tasks = await Task.find({
+      userId,
+      dueDate: { $gte: startOfDay, $lt: endOfDay },
+    }).sort({ [sortBy]: sortOrder })
 
     res.status(200).json({ tasks })
   } catch (error) {

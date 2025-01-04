@@ -7,26 +7,29 @@ import { getTasks, deleteTask } from "../../services/taskService"
 export default function Day({ cycle }) {
   const [tasks, setTasks] = useState([])
   const [showModal, setShowModal] = useState(false)
+  const [dueDate, setDueDate] = useState(new Date())
 
   useEffect(() => {
-    const token = localStorage.getItem("token")
-    if (!token) {
-      throw new Error("Unauthorized: No token found")
-    }
-
     const fetchTasks = async () => {
+      const date = dueDate.toISOString().split("T")[0]
       try {
-        const data = await getTasks()
+        const data = await getTasks(date)
         setTasks(data.tasks)
       } catch (error) {
         console.error(error)
       }
     }
+
     fetchTasks()
-  }, [])
+  }, [dueDate])
 
   const addTask = (newTask) => {
-    setTasks([...tasks, newTask])
+    if (
+      dueDate.toISOString().split("T")[0] ===
+      new Date(newTask.dueDate).toISOString().split("T")[0]
+    ) {
+      setTasks([...tasks, newTask])
+    }
   }
 
   const removeTask = async (taskId) => {
@@ -51,7 +54,22 @@ export default function Day({ cycle }) {
 
   return (
     <div className='bg-neutral-200 rounded-lg p-4'>
-      <h2 className='text-xl uppercase flex items-center'>Today</h2>
+      <h2 className='text-xl uppercase flex items-center'>
+        Today{" "}
+        <span className='text-neutral-400 text-sm ml-3'>
+          {dueDate.toLocaleDateString()}
+        </span>
+      </h2>
+      <div>
+        <label>Change Date:</label>
+        <input
+          className='bg-neutral-100 rounded-lg p-2 w-full'
+          type='date'
+          value={new Date(dueDate).toISOString().split("T")[0]}
+          onChange={(e) => setDueDate(new Date(e.target.value))}
+          required
+        />
+      </div>
       <div className='w-full grid grid-cols-3 gap-3'>
         <div className='w-full rounded-lg'>
           <h4 className='font-bold'>Todo</h4>
