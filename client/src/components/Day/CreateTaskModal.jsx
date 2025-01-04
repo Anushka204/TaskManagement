@@ -1,46 +1,57 @@
 import { useState } from "react"
 import axios from "axios"
+import { createTask, updateTask } from "../../services/taskService"
 
-export default function CreateTaskModal({ hideModal, cycleId, goals }) {
-  const [newTask, setNewTask] = useState({
-    title: "",
-    goalId: "",
-    dueDate: "",
-    cycleId,
-  })
+export default function CreateTaskModal({
+  hideModal,
+  cycleId,
+  goals,
+  addTask,
+  currentTask,
+  updateTasks,
+}) {
+  const today = new Date()
+  const [newTask, setNewTask] = useState(
+    currentTask || {
+      title: "",
+      goalId: "",
+      dueDate: today.toISOString(),
+      cycleId,
+    }
+  )
 
   const [error, setError] = useState(null)
 
   const handleCreateTask = async (e) => {
     e.preventDefault()
     try {
-      const token = localStorage.getItem("token")
+      const data = await createTask(newTask)
 
-      if (!token) {
-        throw new Error("Unauthorized: No token found")
-      }
-
-      const response = await axios.post(
-        "http://localhost:3000/api/tasks",
-        newTask,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      )
-
-      alert("Task created successfully!")
+      addTask(data.task)
+      hideModal()
     } catch (err) {
       setError(err.response?.data?.message || "Failed to create task")
+    }
+  }
+
+  const handleUpdateTask = async (e) => {
+    e.preventDefault()
+    try {
+      const data = await updateTask(newTask)
+      updateTasks(data.task)
+      hideModal()
+    } catch (err) {
+      console.log(err)
     }
   }
 
   return (
     <div className='absolute top-0 left-0 w-screen h-screen flex justify-center items-center bg-[rgba(0,0,0,0.5]'>
       <div className='bg-white z-10 p-10 rounded-lg w-1/2'>
-        <form onSubmit={handleCreateTask} className='flex flex-col gap-5'>
+        <form
+          onSubmit={currentTask ? handleUpdateTask : handleCreateTask}
+          className='flex flex-col gap-5'
+        >
           <div>
             <input
               placeholder='Title'
@@ -58,7 +69,7 @@ export default function CreateTaskModal({ hideModal, cycleId, goals }) {
             <input
               className='bg-neutral-100 rounded-lg p-2 w-full'
               type='date'
-              value={newTask.dueDate}
+              value={new Date(newTask.dueDate).toISOString().split("T")[0]}
               onChange={(e) =>
                 setNewTask({ ...newTask, dueDate: e.target.value })
               }
@@ -72,6 +83,9 @@ export default function CreateTaskModal({ hideModal, cycleId, goals }) {
                 setNewTask({ ...newTask, goalId: e.target.value })
               }
             >
+              <option value='' disabled hidden>
+                -- Select an goal --
+              </option>
               {goals.map((goal) => (
                 <option key={goal._id} value={goal._id}>
                   {goal.title}

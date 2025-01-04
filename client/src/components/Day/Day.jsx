@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react"
 import axios from "axios"
 import CreateTaskModal from "./CreateTaskModal"
+import Task from "./Task"
+import { getTasks, deleteTask } from "../../services/taskService"
 
 export default function Day({ cycle }) {
   const [tasks, setTasks] = useState([])
@@ -14,19 +16,27 @@ export default function Day({ cycle }) {
 
     const fetchTasks = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/api/tasks", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        })
-        setTasks(response.data.tasks)
+        const data = await getTasks()
+        setTasks(data.tasks)
       } catch (error) {
         console.error(error)
       }
     }
     fetchTasks()
   }, [])
+
+  const addTask = (newTask) => {
+    setTasks([...tasks, newTask])
+  }
+
+  const removeTask = async (taskId) => {
+    await deleteTask(taskId)
+    setTasks(tasks.filter((task) => task._id !== taskId))
+  }
+
+  const updateTasks = (task) => {
+    setTasks(tasks.map((t) => (t._id === task._id ? task : t)))
+  }
 
   if (cycle.goals.length === 0) {
     return (
@@ -48,13 +58,14 @@ export default function Day({ cycle }) {
           {tasks
             .filter((task) => task.status === "todo")
             .map((task) => (
-              <div
-                className='bg-neutral-300 rounded-lg p-2 my-2'
+              <Task
+                task={task}
                 key={task._id}
-              >
-                <h4 className='font-bold'>{task.title}</h4>
-                <p>{task.description}</p>
-              </div>
+                cycleId={cycle._id}
+                deleteTask={removeTask}
+                updateTasks={updateTasks}
+                goals={cycle.goals}
+              />
             ))}
         </div>
         <div className='w-full rounded-lg'>
@@ -62,13 +73,14 @@ export default function Day({ cycle }) {
           {tasks
             .filter((task) => task.status === "in-progress")
             .map((task) => (
-              <div
-                className='bg-neutral-300 rounded-lg p-2 my-2'
+              <Task
+                task={task}
                 key={task._id}
-              >
-                <h4 className='font-bold'>{task.title}</h4>
-                <p>{task.description}</p>
-              </div>
+                cycleId={cycle._id}
+                deleteTask={removeTask}
+                updateTasks={updateTasks}
+                goals={cycle.goals}
+              />
             ))}
         </div>
         <div className='w-full rounded-lg'>
@@ -76,13 +88,14 @@ export default function Day({ cycle }) {
           {tasks
             .filter((task) => task.status === "completed")
             .map((task) => (
-              <div
-                className='bg-neutral-300 rounded-lg p-2 my-2'
+              <Task
+                task={task}
                 key={task._id}
-              >
-                <h4 className='font-bold'>{task.title}</h4>
-                <p>{task.description}</p>
-              </div>
+                cycleId={cycle._id}
+                deleteTask={removeTask}
+                updateTasks={updateTasks}
+                goals={cycle.goals}
+              />
             ))}
         </div>
       </div>
@@ -98,6 +111,7 @@ export default function Day({ cycle }) {
             cycleId={cycle._id}
             goals={cycle.goals}
             hideModal={() => setShowModal(false)}
+            addTask={addTask}
           ></CreateTaskModal>
         )}
       </div>
