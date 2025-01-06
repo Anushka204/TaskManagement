@@ -9,6 +9,7 @@ import authRoutes from "./routes/auth.js"
 import cycleRoutes from "./routes/cycles.js"
 import goalRoutes from "./routes/goals.js"
 import taskRoutes from "./routes/tasks.js"
+import dailyScoreRoutes from "./routes/dailyScore.js"
 
 const app = express()
 const port = process.env.PORT || 3000
@@ -33,7 +34,8 @@ db.once("open", () => {
 app.use("/auth", authRoutes)
 app.use("/api/cycles", cycleRoutes)
 app.use("/api/goals", goalRoutes);
-app.use("/api", taskRoutes);
+app.use("/api/tasks", taskRoutes);
+app.use("/api/daily-score", dailyScoreRoutes);
 
 // Test route
 app.get("/", (req, res) => {

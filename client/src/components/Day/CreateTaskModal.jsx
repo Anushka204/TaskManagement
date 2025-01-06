@@ -1,5 +1,5 @@
 import { useState } from "react"
-import axios from "axios"
+import { STATUS } from "../../constants/dashboard"
 import { createTask, updateTask } from "../../services/taskService"
 
 export default function CreateTaskModal({
@@ -17,6 +17,7 @@ export default function CreateTaskModal({
       goalId: "",
       dueDate: today.toISOString(),
       cycleId,
+      status: "todo",
     }
   )
 
@@ -90,6 +91,20 @@ export default function CreateTaskModal({
               {goals.map((goal) => (
                 <option key={goal._id} value={goal._id}>
                   {goal.title}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <select
+              value={newTask.status}
+              onChange={(e) =>
+                setNewTask({ ...newTask, status: e.target.value })
+              }
+            >
+              {STATUS.map((status) => (
+                <option key={status.value} value={status.value}>
+                  {status.label}
                 </option>
               ))}
             </select>

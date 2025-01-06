@@ -1,17 +1,27 @@
 import { useState, useEffect } from "react"
-import axios from "axios"
 import CreateTaskModal from "./CreateTaskModal"
 import Task from "./Task"
 import { getTasks, deleteTask } from "../../services/taskService"
+import { getDailyScore } from "../../services/dailyScoreService"
 
 export default function Day({ cycle }) {
   const [tasks, setTasks] = useState([])
   const [showModal, setShowModal] = useState(false)
   const [dueDate, setDueDate] = useState(new Date())
+  const [dailyScore, setDailyScore] = useState(0)
+
+  const fetchDailyScore = async (d) => {
+    try {
+      const data = await getDailyScore(d)
+      setDailyScore(data.executionScore)
+    } catch (error) {
+      console.error(error)
+    }
+  }
 
   useEffect(() => {
+    const date = dueDate.toISOString().split("T")[0]
     const fetchTasks = async () => {
-      const date = dueDate.toISOString().split("T")[0]
       try {
         const data = await getTasks(date)
         setTasks(data.tasks)
@@ -21,7 +31,13 @@ export default function Day({ cycle }) {
     }
 
     fetchTasks()
+    fetchDailyScore(date)
   }, [dueDate])
+
+  useEffect(() => {
+    const date = dueDate.toISOString().split("T")[0]
+    fetchDailyScore(date)
+  }, [tasks, dueDate])
 
   const addTask = (newTask) => {
     if (
@@ -52,15 +68,22 @@ export default function Day({ cycle }) {
     )
   }
 
+  const completedTasks = tasks.filter((task) => task.status === "completed")
+  const todoTasks = tasks.filter((task) => task.status === "todo")
+  const inProgressTasks = tasks.filter((task) => task.status === "in-progress")
+
   return (
     <div className='bg-neutral-200 rounded-lg p-4'>
-      <h2 className='text-xl uppercase flex items-center'>
-        Today{" "}
-        <span className='text-neutral-400 text-sm ml-3'>
-          {dueDate.toLocaleDateString()}
-        </span>
-      </h2>
-      <div>
+      <div className='flex justify-between'>
+        <h2 className='text-xl uppercase flex items-center'>
+          Today{" "}
+          <span className='text-neutral-400 text-sm ml-3'>
+            {dueDate.toLocaleDateString()}
+          </span>
+        </h2>
+        <span>Execution Score: {dailyScore}%</span>
+      </div>
+      <div className='my-5'>
         <label>Change Date:</label>
         <input
           className='bg-neutral-100 rounded-lg p-2 w-full'
@@ -73,48 +96,42 @@ export default function Day({ cycle }) {
       <div className='w-full grid grid-cols-3 gap-3'>
         <div className='w-full rounded-lg'>
           <h4 className='font-bold'>Todo</h4>
-          {tasks
-            .filter((task) => task.status === "todo")
-            .map((task) => (
-              <Task
-                task={task}
-                key={task._id}
-                cycleId={cycle._id}
-                deleteTask={removeTask}
-                updateTasks={updateTasks}
-                goals={cycle.goals}
-              />
-            ))}
+          {todoTasks.map((task) => (
+            <Task
+              task={task}
+              key={task._id}
+              cycleId={cycle._id}
+              deleteTask={removeTask}
+              updateTasks={updateTasks}
+              goals={cycle.goals}
+            />
+          ))}
         </div>
         <div className='w-full rounded-lg'>
           <h4 className='font-bold'>In Progress</h4>
-          {tasks
-            .filter((task) => task.status === "in-progress")
-            .map((task) => (
-              <Task
-                task={task}
-                key={task._id}
-                cycleId={cycle._id}
-                deleteTask={removeTask}
-                updateTasks={updateTasks}
-                goals={cycle.goals}
-              />
-            ))}
+          {inProgressTasks.map((task) => (
+            <Task
+              task={task}
+              key={task._id}
+              cycleId={cycle._id}
+              deleteTask={removeTask}
+              updateTasks={updateTasks}
+              goals={cycle.goals}
+            />
+          ))}
         </div>
         <div className='w-full rounded-lg'>
           <h4 className='font-bold'>Completed</h4>
-          {tasks
-            .filter((task) => task.status === "completed")
-            .map((task) => (
-              <Task
-                task={task}
-                key={task._id}
-                cycleId={cycle._id}
-                deleteTask={removeTask}
-                updateTasks={updateTasks}
-                goals={cycle.goals}
-              />
-            ))}
+          {completedTasks.map((task) => (
+            <Task
+              task={task}
+              key={task._id}
+              cycleId={cycle._id}
+              deleteTask={removeTask}
+              updateTasks={updateTasks}
+              goals={cycle.goals}
+            />
+          ))}
         </div>
       </div>
       <div>
