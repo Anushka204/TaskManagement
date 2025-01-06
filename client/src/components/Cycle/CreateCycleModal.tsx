@@ -1,16 +1,22 @@
 import { useState } from "react"
-import axios from "axios"
 import useAuthToken from "../../hooks/useAuthToken"
 import { useNavigate } from "react-router-dom"
 import { VIEWS } from "../../constants/dashboard"
 import { createCycle } from "../../services/cycleService"
 
-export default function CreateCycleModal({
+type Props = {
+  hideModal: () => void
+  setCycles: (cycles: any) => void
+  cycles: any
+  switchCycleView: (view: string, data: any) => void
+}
+
+const CreateCycleModal: React.FC<Props> = ({
   hideModal,
   setCycles,
   cycles,
   switchCycleView,
-}) {
+}) => {
   const [newCycle, setNewCycle] = useState({
     title: "",
     description: "",
@@ -23,7 +29,7 @@ export default function CreateCycleModal({
 
   const navigate = useNavigate()
 
-  const handleCreateCycle = async (e) => {
+  const handleCreateCycle = async (e: MouseEvent) => {
     e.preventDefault()
     try {
       if (!token) {
@@ -115,3 +121,5 @@ export default function CreateCycleModal({
     </div>
   )
 }
+
+export default CreateCycleModal

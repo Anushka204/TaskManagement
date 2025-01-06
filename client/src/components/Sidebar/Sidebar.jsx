@@ -1,5 +1,5 @@
 import { useState } from "react"
-import CreateCycleModal from "../Cycle/CreateCycleModal"
+import CreateCycleModal from "../Cycle/CreateCycleModal.tsx"
 import { VIEWS } from "../../constants/dashboard"
 
 export default function Sidebar({

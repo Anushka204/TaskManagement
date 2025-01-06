@@ -31,7 +31,6 @@ export default function Day({ cycle }) {
     }
 
     fetchTasks()
-    fetchDailyScore(date)
   }, [dueDate])
 
   useEffect(() => {
