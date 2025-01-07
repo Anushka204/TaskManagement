@@ -6,7 +6,7 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom"
 import Success from "./pages/Success.jsx"
 import AppContextProvider from "./context/AppContext.jsx"
 import PrivateRoute from "./routes/PrivateRoute.jsx"
-import Dashboard from "./pages/Dashboard.jsx"
+import Dashboard from "./pages/Dashboard.tsx"
 
 const router = createBrowserRouter([
   {

@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react"
 import Cycle from "../components/Cycle/Cycle"
-import Sidebar from "../components/Sidebar/Sidebar.jsx"
+import AppSidebar from "../components/Sidebar/Sidebar.jsx"
 import Day from "../components/Day/Day.jsx"
+import Overview from "../components/Overview/Overview"
 import { VIEWS } from "../constants/dashboard.js"
 import { getCycles, deleteCycle } from "../services/cycleService.js"
-import { deleteGoal, updateGoal } from "../services/goalService.js"
+import { deleteGoal } from "../services/goalService.js"
+import { SidebarTrigger, SidebarProvider } from "@/components/ui/sidebar"
 
 const CycleView = () => {
   const [cycles, setCycles] = useState([])
@@ -78,8 +80,10 @@ const CycleView = () => {
             updateCycle={updateCycle}
           />
         )
-      default:
+      case VIEWS.DAY:
         return <Day cycle={cycles[0]}></Day>
+      default:
+        return <Overview />
     }
   }
 
@@ -92,20 +96,35 @@ const CycleView = () => {
   }
 
   return (
-    <Sidebar
-      switchView={switchView}
-      view={view}
-      cycles={cycles}
-      loading={loading}
-      error={error}
-      setCycles={setCycles}
-    >
-      {cycles.length > 0 ? (
-        renderView()
-      ) : (
-        <div>No cycles found. Create one to get started!</div>
-      )}
-    </Sidebar>
+    <>
+      <SidebarProvider>
+        <AppSidebar
+          switchView={switchView}
+          view={view}
+          cycles={cycles}
+          loading={loading}
+          error={error}
+          setCycles={setCycles}
+        >
+          <SidebarTrigger />
+          {cycles.length > 0 ? (
+            renderView()
+          ) : (
+            <div>No cycles found. Create one to get started!</div>
+          )}
+        </AppSidebar>
+        <main className="w-full">
+          <SidebarTrigger />
+          <div className="w-full">
+            {cycles.length > 0 ? (
+              renderView()
+            ) : (
+              <div>No cycles found. Create one to get started!</div>
+            )}
+          </div>
+        </main>
+      </SidebarProvider>
+    </>
   )
 }
 
