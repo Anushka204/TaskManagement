@@ -11,14 +11,12 @@ import { VIEWS } from "../../constants/dashboard"
 import { createCycle } from "../../services/cycleService"
 
 type Props = {
-  hideModal: () => void
   setCycles: (cycles: any) => void
   cycles: any
   switchCycleView: (view: string, data: any) => void
 }
 
 const CreateCycleModal: React.FC<Props> = ({
-  hideModal,
   setCycles,
   cycles,
   switchCycleView,
@@ -28,6 +26,7 @@ const CreateCycleModal: React.FC<Props> = ({
     description: "",
     startDate: "",
     endDate: "",
+    visionBoardImage: "",
   })
 
   const [error, setError] = useState(null)
@@ -46,9 +45,14 @@ const CreateCycleModal: React.FC<Props> = ({
       const data = await createCycle(newCycle)
 
       setCycles([...cycles, data])
-      setNewCycle({ title: "", description: "", startDate: "", endDate: "" })
+      setNewCycle({
+        title: "",
+        description: "",
+        startDate: "",
+        endDate: "",
+        visionBoardImage: "",
+      })
       switchCycleView(VIEWS.CYCLE, data)
-      hideModal()
     } catch (err) {
       setError(err.response?.data?.message || "Failed to create cycle")
     }
@@ -110,6 +114,18 @@ const CreateCycleModal: React.FC<Props> = ({
                   required
                 />
               </div>
+              <div>
+                <input
+                  placeholder='Vision Board Image URL'
+                  className='bg-neutral-100 rounded-lg p-2 w-full'
+                  type='text'
+                  value={newCycle.visionBoardImage}
+                  onChange={(e) =>
+                    setNewCycle({ ...newCycle, visionBoardImage: e.target.value })
+                  }
+                  required
+                />
+              </div>
               <div className='flex justify-between'>
                 <button
                   type='submit'
@@ -117,10 +133,7 @@ const CreateCycleModal: React.FC<Props> = ({
                 >
                   Save
                 </button>
-                <button
-                  onClick={hideModal}
-                  className='mt-5 px-4 py-2 bg-neutral-300 hover:bg-neutral-400 hover:drop-shadow-lg transition-all text-white font-bold rounded-lg'
-                >
+                <button className='mt-5 px-4 py-2 bg-neutral-300 hover:bg-neutral-400 hover:drop-shadow-lg transition-all text-white font-bold rounded-lg'>
                   Cancel
                 </button>
                 {error && <p style={{ color: "red" }}>{error}</p>}

@@ -7,6 +7,7 @@ import { VIEWS } from "../constants/dashboard.js"
 import { getCycles, deleteCycle } from "../services/cycleService.js"
 import { deleteGoal } from "../services/goalService.js"
 import { SidebarTrigger, SidebarProvider } from "@/components/ui/sidebar"
+import { CycleProvider } from "../context/CycleContext"
 
 const CycleView = () => {
   const [cycles, setCycles] = useState([])
@@ -83,7 +84,7 @@ const CycleView = () => {
       case VIEWS.DAY:
         return <Day cycle={cycles[0]}></Day>
       default:
-        return <Overview />
+        return <Overview cycle={data} updateCycle={updateCycle} />
     }
   }
 
@@ -113,16 +114,18 @@ const CycleView = () => {
             <div>No cycles found. Create one to get started!</div>
           )}
         </AppSidebar>
-        <main className="w-full">
-          <SidebarTrigger />
-          <div className="w-full">
-            {cycles.length > 0 ? (
-              renderView()
-            ) : (
-              <div>No cycles found. Create one to get started!</div>
-            )}
-          </div>
-        </main>
+        <CycleProvider>
+          <main className='w-full'>
+            <SidebarTrigger />
+            <div className='w-full'>
+              {cycles.length > 0 ? (
+                renderView()
+              ) : (
+                <div>No cycles found. Create one to get started!</div>
+              )}
+            </div>
+          </main>
+        </CycleProvider>
       </SidebarProvider>
     </>
   )

@@ -29,7 +29,6 @@ export default function AppSidebar({
       const fetchUser = async () => {
         const data = await getUser()
         setUser(data.user)
-        console.log(data)
       }
       fetchUser()
     } catch (error) {
@@ -50,7 +49,7 @@ export default function AppSidebar({
       <SidebarHeader>
         <div className='flex p-3 gap-2 w-full justify-between items-center'>
           <div
-            className='w-12 h-12 rounded-full bg-yellow-300'
+            className='w-14 h-14 rounded-full bg-yellow-300 bg-cover'
             style={{ backgroundImage: `url('${user?.profilePicture}')` }}
           ></div>
           <div className='w-9/12 flex flex-col justify-between'>

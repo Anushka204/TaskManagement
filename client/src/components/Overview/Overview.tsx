@@ -5,7 +5,7 @@ import StatsBox from "./StatsBox"
 import VisionBoard from "./VisionBoard"
 import PendingTasks from "./PendingTasks"
 
-const Overview = () => {
+const Overview = ({ cycle }) => {
   return (
     <div className='w-full'>
       <Header />
@@ -26,7 +26,7 @@ const Overview = () => {
           <StatsBox value='1/12' label='Goals Completed' />
         </div>
         <div className='col-span-8 row-span-2 row-start-3'>
-          <VisionBoard />
+          <VisionBoard cycle={cycle} />
         </div>
         <div className='col-span-4 row-span-1 row-start-3'>
           <PendingTasks />

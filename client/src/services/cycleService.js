@@ -5,6 +5,11 @@ export const getCycles = async () => {
   return response.data
 }
 
+export const updateCycle = async (cycle) => {
+  const response = await apiClient.put(`/cycles/${cycle._id}`, cycle)
+  return response.data
+}
+
 export const createCycle = async (cycle) => {
   const response = await apiClient.post("/cycles", cycle)
   return response.data
