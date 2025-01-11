@@ -7,20 +7,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { VIEWS } from "../../constants/dashboard"
-import { createCycle } from "../../services/cycleService"
+import { useCycle } from "../../context/CycleContext"
+import { useToast } from "../../hooks/use-toast"
 
-type Props = {
-  setCycles: (cycles: any) => void
-  cycles: any
-  switchCycleView: (view: string, data: any) => void
-}
+type Props = {}
 
-const CreateCycleModal: React.FC<Props> = ({
-  setCycles,
-  cycles,
-  switchCycleView,
-}) => {
+const CreateCycleModal: React.FC<Props> = ({ setOpen }) => {
   const [newCycle, setNewCycle] = useState({
     title: "",
     description: "",
@@ -31,8 +23,10 @@ const CreateCycleModal: React.FC<Props> = ({
 
   const [error, setError] = useState(null)
   const { token, logout } = useAuthToken()
+  const { addCycle } = useCycle()
 
   const navigate = useNavigate()
+  const { toast } = useToast()
 
   const handleCreateCycle = async (e: MouseEvent) => {
     e.preventDefault()
@@ -42,9 +36,12 @@ const CreateCycleModal: React.FC<Props> = ({
         navigate("/")
       }
 
-      const data = await createCycle(newCycle)
+      await addCycle(newCycle)
 
-      setCycles([...cycles, data])
+      toast({
+        title: "Successfully created a new cycle!",
+      })
+
       setNewCycle({
         title: "",
         description: "",
@@ -52,9 +49,10 @@ const CreateCycleModal: React.FC<Props> = ({
         endDate: "",
         visionBoardImage: "",
       })
-      switchCycleView(VIEWS.CYCLE, data)
     } catch (err) {
       setError(err.response?.data?.message || "Failed to create cycle")
+    } finally {
+      setOpen(false)
     }
   }
 
@@ -121,20 +119,20 @@ const CreateCycleModal: React.FC<Props> = ({
                   type='text'
                   value={newCycle.visionBoardImage}
                   onChange={(e) =>
-                    setNewCycle({ ...newCycle, visionBoardImage: e.target.value })
+                    setNewCycle({
+                      ...newCycle,
+                      visionBoardImage: e.target.value,
+                    })
                   }
                   required
                 />
               </div>
-              <div className='flex justify-between'>
+              <div className='flex justify-end'>
                 <button
                   type='submit'
                   className='mt-5 px-4 py-2 bg-blue-500 hover:bg-blue-600 hover:drop-shadow-lg transition-all text-white font-bold rounded-lg'
                 >
                   Save
-                </button>
-                <button className='mt-5 px-4 py-2 bg-neutral-300 hover:bg-neutral-400 hover:drop-shadow-lg transition-all text-white font-bold rounded-lg'>
-                  Cancel
                 </button>
                 {error && <p style={{ color: "red" }}>{error}</p>}
               </div>

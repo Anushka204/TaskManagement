@@ -1,7 +1,8 @@
-export const VIEWS = {
-  CYCLE: "cycle",
+export const TABS = {
+  CYCLE: "CYCLE",
   DAY: "DAY",
   WEEK: "WEEK",
+  OVERVIEW: "OVERVIEW",
 }
 
 export const STATUS = [

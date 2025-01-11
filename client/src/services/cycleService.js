@@ -2,6 +2,7 @@ import { apiClient } from "./apiClient"
 
 export const getCycles = async () => {
   const response = await apiClient.get("/cycles")
+  console.log(response.data[0].goals)
   return response.data
 }
 

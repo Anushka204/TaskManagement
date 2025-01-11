@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react"
 import CreateCycleModal from "../Cycle/CreateCycleModal.tsx"
-import { VIEWS } from "../../constants/dashboard"
 import { Plus } from "lucide-react"
 import {
   Sidebar,
@@ -14,15 +13,14 @@ import {
 import { Dialog, DialogTrigger } from "@/components/ui/dialog"
 import { Progress } from "@/components/ui/progress"
 import { getUser } from "../../services/userService.js"
+import { useCycle } from "../../context/CycleContext.jsx"
+import { getDailyScore } from "../../services/dailyScoreService.js"
 
-export default function AppSidebar({
-  switchView,
-  loading,
-  error,
-  cycles,
-  setCycles,
-}) {
+export default function AppSidebar() {
   const [user, setUser] = useState({})
+  const [open, setOpen] = useState(false)
+  const [dailyScore, setDailyScore] = useState(0)
+  const { cycles, loading } = useCycle()
 
   useEffect(() => {
     try {
@@ -36,29 +34,38 @@ export default function AppSidebar({
     }
   }, [])
 
+  useEffect(() => {
+    try {
+      const fetchDailyScore = async () => {
+        const today = new Date()
+        const data = await getDailyScore(today.toISOString().split("T")[0])
+        setDailyScore(data.executionScore)
+      }
+      fetchDailyScore()
+    } catch (error) {
+      console.error(error)
+    }
+  }, [])
+
   if (loading) {
     return <div>Loading cycles...</div>
   }
 
-  if (error) {
-    return <div>Error: {error}</div>
-  }
-
   return (
-    <Sidebar variant='floating'>
+    <Sidebar variant='floating' className='bg-neutral-950'>
       <SidebarHeader>
         <div className='flex p-3 gap-2 w-full justify-between items-center'>
           <div
-            className='w-14 h-14 rounded-full bg-yellow-300 bg-cover'
+            className='w-14 h-14 rounded-full bg-lime-400 bg-cover'
             style={{ backgroundImage: `url('${user?.profilePicture}')` }}
           ></div>
           <div className='w-9/12 flex flex-col justify-between'>
-            <span className='font-bold'>{user?.username || user?.email}</span>
+            <span className='font-bold lexend-giga-700 text-xs'>{user?.username || user?.email}</span>
             <div className=''>
               <span className='text-xs font-bold text-neutral-400'>
                 Today's Execution Score
               </span>
-              <Progress className="mt-1" value={33} />
+              <Progress className='mt-1' value={dailyScore} />
             </div>
           </div>
         </div>
@@ -66,7 +73,7 @@ export default function AppSidebar({
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>
-            <span className='p-1 uppercase font-bold text-neutral-100'>
+            <span className='p-1 uppercase font-bold text-neutral-100 lexend-giga-700'>
               Current Cycle
             </span>
           </SidebarGroupLabel>
@@ -77,9 +84,8 @@ export default function AppSidebar({
                   <div className='flex flex-col gap-3'>
                     {cycles.map((cycle) => (
                       <div
-                        onClick={() => switchView(VIEWS.CYCLE, cycle)}
                         key={cycle._id}
-                        className='cursor-pointer bg-neutral-700 rounded-full px-5 py-3'
+                        className='cursor-pointer bg-gradient-to-br from-neutral-800 to-neutral-900 border border-neutral-800 rounded-md px-5 py-3'
                       >
                         <span>{cycle.title}</span>
                       </div>
@@ -90,37 +96,27 @@ export default function AppSidebar({
                     <p>No cycles found. Create one to get started!</p>
                   </>
                 )}
-                <Dialog>
+                <Dialog open={open} onOpenChange={setOpen}>
                   <DialogTrigger asChild>
                     <button
+                      onClick={() => setOpen(true)}
                       className='mt-5 p-2 border border-dashed border-neutral-600 flex items-center gap-2 hover:drop-shadow-lg transition-all font-bold rounded-full'
                     >
-                      <span className='rounded-full bg-yellow-300 text-neutral-900 p-2'>
+                      <span className='rounded-full bg-lime-400 text-neutral-900 p-2'>
                         <Plus />
                       </span>
                       Create New Cycle
                     </button>
                   </DialogTrigger>
-                  <CreateCycleModal
-                    setCycles={setCycles}
-                    cycles={cycles}
-                    switchCycleView={switchView}
-                    hideModal={() => setShowModal(false)}
-                  ></CreateCycleModal>
+                  <CreateCycleModal setOpen={setOpen}></CreateCycleModal>
                 </Dialog>
-                <button
-                  className='mt-10 text-xs'
-                  onClick={() => switchView(VIEWS.DAY, cycles[0])}
-                >
-                  Switch to daily view
-                </button>
               </div>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
         <SidebarGroup>
           <SidebarGroupLabel>
-            <span className='p-1 uppercase font-bold text-neutral-100'>
+            <span className='p-1 uppercase font-bold text-neutral-100 lexend-giga-700'>
               Past Cycles
             </span>
           </SidebarGroupLabel>

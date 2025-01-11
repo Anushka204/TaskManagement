@@ -8,6 +8,7 @@ const cycleSchema = new mongoose.Schema({
   endDate: { type: Date, required: true },
   goals: [{ type: mongoose.Schema.Types.ObjectId, ref: "Goal" }],
   createdAt: { type: Date, default: Date.now },
+  visionBoardImage: { type: String, default: "" },
 })
 
 export default mongoose.model("Cycle", cycleSchema)

@@ -1,12 +1,19 @@
 import { useState } from "react"
 import { createGoal, updateGoal } from "../../services/goalService"
 import { STATUS } from "../../constants/dashboard"
+import {
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { DialogFooter } from "../ui/dialog"
+import { useToast } from "../../hooks/use-toast"
 
 export default function CreateGoalModal({
-  hideModal,
   cycle,
   updateCycle,
   currentGoal,
+  setOpen,
 }) {
   const [goal, setGoal] = useState(
     currentGoal || {
@@ -19,10 +26,15 @@ export default function CreateGoalModal({
   )
   const [goalError, setGoalError] = useState("")
 
+  const { toast } = useToast()
+
   const updateCurrentGoal = async (e) => {
     e.preventDefault()
     try {
       const data = await updateGoal(goal)
+      toast({
+        title: "Successfully created a new goal!",
+      })
       updateCycle({
         ...cycle,
         goals: cycle.goals.map((g) => {
@@ -39,9 +51,13 @@ export default function CreateGoalModal({
         status: "todo",
         cycleId: cycle._id,
       })
-      hideModal()
+      toast({
+        title: "Goal was successfully updated!",
+      })
     } catch (err) {
       setGoalError(err)
+    } finally {
+      setOpen(false)
     }
   }
 
@@ -57,9 +73,14 @@ export default function CreateGoalModal({
         status: "todo",
         cycleId: cycle._id,
       })
-      hideModal()
     } catch (err) {
       setGoalError(err)
+      toast({
+        title: "Goal was successfully created!",
+      })
+
+    } finally {
+      setOpen(false)
     }
   }
 
@@ -72,8 +93,11 @@ export default function CreateGoalModal({
   }
 
   return (
-    <div className='absolute top-0 left-0 w-screen h-screen flex justify-center items-center bg-[rgba(0,0,0,0.5]'>
-      <div className='bg-white z-10 p-10 rounded-lg w-1/2'>
+    <DialogContent>
+      <DialogHeader>
+        <DialogTitle>Add new goal</DialogTitle>
+      </DialogHeader>
+      <div className='bp-10 rounded-lg w-full'>
         <form
           onSubmit={currentGoal ? updateCurrentGoal : createNewGoal}
           className='flex flex-col gap-5'
@@ -141,23 +165,19 @@ export default function CreateGoalModal({
           <button className='w-fit font-bold' onClick={addTactic}>
             + Add Tactic
           </button>
-          <div className='flex justify-between'>
-            <button
-              type='submit'
-              className='mt-5 px-4 py-2 bg-blue-500 hover:bg-blue-600 hover:drop-shadow-lg transition-all text-white font-bold rounded-lg'
-            >
-              Save
-            </button>
-            <button
-              onClick={hideModal}
-              className='mt-5 px-4 py-2 bg-neutral-300 hover:bg-neutral-400 hover:drop-shadow-lg transition-all text-white font-bold rounded-lg'
-            >
-              Cancel
-            </button>
-            {goalError && <p style={{ color: "red" }}>{goalError}</p>}
-          </div>
+          <DialogFooter>
+            <div className='flex justify-between'>
+              <button
+                type='submit'
+                className='mt-5 px-4 py-2 bg-blue-500 hover:bg-blue-600 hover:drop-shadow-lg transition-all text-white font-bold rounded-lg'
+              >
+                Save
+              </button>
+              {goalError && <p style={{ color: "red" }}>{goalError}</p>}
+            </div>
+          </DialogFooter>
         </form>
       </div>
-    </div>
+    </DialogContent>
   )
 }

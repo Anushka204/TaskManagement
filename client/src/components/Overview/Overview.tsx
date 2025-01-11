@@ -1,15 +1,22 @@
-import Header from "./Header"
 import DailyExecutionTrend from "./DailyExecutionTrend"
 import WeeklyExecutionTrend from "./WeeklyExecutionTrend"
 import StatsBox from "./StatsBox"
 import VisionBoard from "./VisionBoard"
 import PendingTasks from "./PendingTasks"
+import LogProgress from "./LogProgress"
+import { useCycle } from "../../context/CycleContext"
 
-const Overview = ({ cycle }) => {
+const Overview = ({ setCurrentTab }) => {
+  const { currentCycle } = useCycle()
+
+  const completedGoals = currentCycle?.goals.filter(
+    (goal) => goal.status === "completed"
+  ).length
+
+  const totalGoals = currentCycle?.goals.length
   return (
     <div className='w-full'>
-      <Header />
-      <div className='p-6 h-[80vh] grid grid-cols-12 gap-4'>
+      <div className='grid grid-cols-12 gap-3'>
         <div className='col-span-4 row-span-2'>
           <DailyExecutionTrend />
         </div>
@@ -20,18 +27,18 @@ const Overview = ({ cycle }) => {
           <StatsBox value='1/12' label='Weeks Completed' />
         </div>
         <div className='col-span-2'>
-          <StatsBox value='1/12' label='Goals Completed' />
+          <StatsBox
+            value={`${completedGoals}/${totalGoals}`}
+            label='Goals Completed'
+          />
         </div>
         <div className='col-span-4 row-start-2 col-start-9'>
-          <StatsBox value='1/12' label='Goals Completed' />
+          <LogProgress setCurrentTab={setCurrentTab} />
         </div>
         <div className='col-span-8 row-span-2 row-start-3'>
-          <VisionBoard cycle={cycle} />
+          <VisionBoard setCurrentTab={setCurrentTab} />
         </div>
-        <div className='col-span-4 row-span-1 row-start-3'>
-          <PendingTasks />
-        </div>
-        <div className='col-span-4 row-span-1 row-start-4'>
+        <div className='col-span-4 row-span-2 row-start-3'>
           <PendingTasks />
         </div>
       </div>

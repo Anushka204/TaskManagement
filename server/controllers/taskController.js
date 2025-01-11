@@ -25,7 +25,7 @@ export const getTasks = async (req, res) => {
 
 export const createTask = async (req, res) => {
   try {
-    const { title, goalId, dueDate, cycleId } = req.body
+    const { title, goalId, dueDate, cycleId, status } = req.body
 
     if (!title || !goalId) {
       return res.status(400).json({ message: "Title and goalId are required" })
@@ -42,6 +42,7 @@ export const createTask = async (req, res) => {
       dueDate,
       goalId,
       cycleId,
+      status
     })
 
     await newTask.save()

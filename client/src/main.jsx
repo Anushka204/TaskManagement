@@ -7,6 +7,8 @@ import Success from "./pages/Success.jsx"
 import AppContextProvider from "./context/AppContext.jsx"
 import PrivateRoute from "./routes/PrivateRoute.jsx"
 import Dashboard from "./pages/Dashboard.tsx"
+import { CycleProvider } from "./context/CycleContext.jsx"
+import { Toaster } from "@/components/ui/toaster.tsx"
 
 const router = createBrowserRouter([
   {
@@ -21,7 +23,9 @@ const router = createBrowserRouter([
     path: "/dashboard",
     element: (
       <PrivateRoute>
-        <Dashboard />
+        <CycleProvider>
+          <Dashboard />
+        </CycleProvider>
       </PrivateRoute>
     ),
   },
@@ -31,6 +35,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <AppContextProvider>
       <RouterProvider router={router} />
+      <Toaster position='bottom-center' />
     </AppContextProvider>
   </React.StrictMode>
 )

@@ -10,6 +10,7 @@ import cycleRoutes from "./routes/cycles.js"
 import goalRoutes from "./routes/goals.js"
 import taskRoutes from "./routes/tasks.js"
 import dailyScoreRoutes from "./routes/dailyScore.js"
+import usersRoutes from "./routes/users.js"
 
 const app = express()
 const port = process.env.PORT || 3000
@@ -36,6 +37,7 @@ app.use("/api/cycles", cycleRoutes)
 app.use("/api/goals", goalRoutes);
 app.use("/api/tasks", taskRoutes);
 app.use("/api/daily-score", dailyScoreRoutes);
+app.use("/api/users", usersRoutes);
 
 // Test route
 app.get("/", (req, res) => {

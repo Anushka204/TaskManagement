@@ -2,7 +2,7 @@ import { useState } from "react"
 import CreateGoalModal from "./CreateGoalModal"
 
 export default function Goal({ goal, deleteGoal, cycle, updateCycle }) {
-  const [showModal, setShowModal] = useState(false)
+  const [open, setOpen] = useState(false)
 
   return (
     <div className='bg-neutral-300 rounded-lg p-2 my-2' key={goal._id}>

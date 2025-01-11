@@ -3,8 +3,10 @@ import CreateTaskModal from "./CreateTaskModal"
 import Task from "./Task"
 import { getTasks, deleteTask } from "../../services/taskService"
 import { getDailyScore } from "../../services/dailyScoreService"
+import { useCycle } from '../../context/CycleContext'
 
-export default function Day({ cycle }) {
+export default function Day() {
+  const { currentCycle } = useCycle()
   const [tasks, setTasks] = useState([])
   const [showModal, setShowModal] = useState(false)
   const [dueDate, setDueDate] = useState(new Date())
@@ -56,7 +58,7 @@ export default function Day({ cycle }) {
     setTasks(tasks.map((t) => (t._id === task._id ? task : t)))
   }
 
-  if (cycle.goals.length === 0) {
+  if (currentCycle.goals.length === 0) {
     return (
       <div className='bg-neutral-200 rounded-lg p-4'>
         <h2 className='text-xl uppercase flex items-center'>Today</h2>
@@ -99,10 +101,10 @@ export default function Day({ cycle }) {
             <Task
               task={task}
               key={task._id}
-              cycleId={cycle._id}
+              cycleId={currentCycle._id}
               deleteTask={removeTask}
               updateTasks={updateTasks}
-              goals={cycle.goals}
+              goals={currentCycle.goals}
             />
           ))}
         </div>
@@ -112,10 +114,10 @@ export default function Day({ cycle }) {
             <Task
               task={task}
               key={task._id}
-              cycleId={cycle._id}
+              cycleId={currentCycle._id}
               deleteTask={removeTask}
               updateTasks={updateTasks}
-              goals={cycle.goals}
+              goals={currentCycle.goals}
             />
           ))}
         </div>
@@ -125,10 +127,10 @@ export default function Day({ cycle }) {
             <Task
               task={task}
               key={task._id}
-              cycleId={cycle._id}
+              cycleId={currentCycle._id}
               deleteTask={removeTask}
               updateTasks={updateTasks}
-              goals={cycle.goals}
+              goals={currentCycle.goals}
             />
           ))}
         </div>
@@ -142,8 +144,8 @@ export default function Day({ cycle }) {
         </button>
         {showModal && (
           <CreateTaskModal
-            cycleId={cycle._id}
-            goals={cycle.goals}
+            cycleId={currentCycle._id}
+            goals={currentCycle.goals}
             hideModal={() => setShowModal(false)}
             addTask={addTask}
           ></CreateTaskModal>

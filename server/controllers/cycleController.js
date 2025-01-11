@@ -1,15 +1,11 @@
 import Cycle from "../models/Cycle.js"
+import Goal from "../models/Goal.js"
 
 export const getCycles = async (req, res) => {
   try {
     const userId = req.user.userId
-    const cycles = await Cycle.find({ userId }).populate({
-      path: "goals",
-      populate: {
-        path: "tactics",
-        model: "Tactic",
-      },
-    })
+    const cycles = await Cycle.find({ userId }).populate("goals")
+
     res.status(200).json(cycles)
   } catch (error) {
     res.status(500).json({ message: error.message })
@@ -18,7 +14,8 @@ export const getCycles = async (req, res) => {
 
 export const createCycle = async (req, res) => {
   try {
-    const { title, description, startDate, endDate, goals } = req.body
+    const { title, description, startDate, endDate, goals, visionBoardImage } =
+      req.body
 
     const newCycle = new Cycle({
       userId: req.user.userId,
@@ -27,6 +24,7 @@ export const createCycle = async (req, res) => {
       startDate,
       endDate,
       goals,
+      visionBoardImage,
     })
 
     await newCycle.save()

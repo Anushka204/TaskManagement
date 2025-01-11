@@ -1,11 +1,11 @@
-import { createContext, useContext, useState, useEffect } from "react"
-import axios from "axios"
+import { createContext, useContext, useReducer, useEffect } from "react"
 import {
   createCycle,
   deleteCycle as deleteCycleApi,
   getCycles,
   updateCycle as updateCycleApi,
 } from "../services/cycleService"
+import { ACTIONS, cycleReducer, initialState } from '../reducers/cycleReducer'
 
 const CycleContext = createContext()
 
@@ -18,59 +18,41 @@ export const useCycle = () => {
 }
 
 export const CycleProvider = ({ children }) => {
-  const [cycles, setCycles] = useState([])
-  const [currentCycle, setCurrentCycle] = useState(null)
-  const [loading, setLoading] = useState(false)
+  const [state, dispatch] = useReducer(cycleReducer, initialState)
 
   const fetchCycles = async () => {
-    setLoading(true)
+    dispatch({ type: ACTIONS.SET_LOADING, payload: true })
     try {
       const data = await getCycles()
-      setCycles(data)
-      setCurrentCycle(data[0])
+      dispatch({ type: ACTIONS.SET_CYCLES, payload: data })
     } catch (error) {
       console.error("Error fetching cycles:", error)
-    } finally {
-      setLoading(false)
+    }
+    dispatch({ type: ACTIONS.SET_LOADING, payload: false })
+  }
+
+  const addCycle = async (newCycle) => {
+    try {
+      const data = await createCycle(newCycle)
+      dispatch({ type: ACTIONS.ADD_CYCLE, payload: data })
+    } catch (error) {
+      console.error("Error adding cycle:", error)
     }
   }
 
   const updateCycle = async (updates) => {
     try {
       const updatedCycle = await updateCycleApi(updates)
-
-      setCycles((prevCycles) =>
-        prevCycles.map((cycle) =>
-          cycle._id === updatedCycle._id ? updatedCycle : cycle
-        )
-      )
-
-      if (currentCycle && currentCycle._id === updates._id) {
-        setCurrentCycle(updatedCycle)
-      }
+      dispatch({ type: ACTIONS.UPDATE_CYCLE, payload: updatedCycle })
     } catch (error) {
       console.error("Error updating cycle:", error)
-    }
-  }
-
-  const addCycle = async (newCycle) => {
-    try {
-      const data = await createCycle(newCycle)
-      setCycles((prevCycles) => [...prevCycles, data])
-    } catch (error) {
-      console.error("Error adding cycle:", error)
     }
   }
 
   const deleteCycle = async (cycleId) => {
     try {
       await deleteCycleApi(cycleId)
-      setCycles((prevCycles) =>
-        prevCycles.filter((cycle) => cycle._id !== cycleId)
-      )
-      if (currentCycle && currentCycle._id === cycleId) {
-        setCurrentCycle(null)
-      }
+      dispatch({ type: ACTIONS.DELETE_CYCLE, payload: cycleId })
     } catch (error) {
       console.error("Error deleting cycle:", error)
     }
@@ -83,10 +65,11 @@ export const CycleProvider = ({ children }) => {
   return (
     <CycleContext.Provider
       value={{
-        cycles,
-        currentCycle,
-        setCurrentCycle,
-        loading,
+        cycles: state.cycles,
+        currentCycle: state.currentCycle,
+        setCurrentCycle: (cycle) =>
+          dispatch({ type: ACTIONS.SET_CURRENT_CYCLE, payload: cycle }),
+        loading: state.loading,
         addCycle,
         updateCycle,
         deleteCycle,
