@@ -95,16 +95,16 @@ export default function AppSidebar() {
                   </div>
                 ) : (
                   <>
-                    <p>No cycles found. Create one to get started!</p>
+                    <p className='text-neutral-400'>No cycles found. Create one to get started!</p>
                   </>
                 )}
                 <Dialog open={open} onOpenChange={setOpen}>
                   <DialogTrigger asChild>
                     <button
                       onClick={() => setOpen(true)}
-                      className='mt-5 p-2 border border-dashed border-neutral-600 flex items-center gap-2 hover:drop-shadow-lg transition-all font-bold rounded-full'
+                      className='mt-5 px-4 py-1 bg-lime-400 text-neutral-900 uppercase lexend-giga-700 flex items-center gap-2 hover:drop-shadow-lg transition-all font-bold rounded-full'
                     >
-                      <span className='rounded-full bg-lime-400 text-neutral-900 p-2'>
+                      <span className='rounded-full text-lime-400 bg-neutral-900 p-2'>
                         <Plus />
                       </span>
                       Create New Cycle
