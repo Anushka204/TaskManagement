@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import CreateCycleModal from "../Cycle/CreateCycleModal.tsx"
-import { Plus } from "lucide-react"
+import { LogOut, Plus } from "lucide-react"
 import {
   Sidebar,
   SidebarContent,
@@ -9,18 +9,26 @@ import {
   SidebarGroupLabel,
   SidebarMenu,
   SidebarHeader,
+  SidebarFooter,
 } from "@/components/ui/sidebar"
 import { Dialog, DialogTrigger } from "@/components/ui/dialog"
 import { Progress } from "@/components/ui/progress"
 import { getUser } from "../../services/userService.js"
 import { useCycle } from "../../context/CycleContext.jsx"
 import { getDailyScore } from "../../services/dailyScoreService.js"
+import useAuthToken from "@/hooks/useAuthToken.jsx"
+import { Separator } from "@/components/ui/separator"
+import { useNavigate } from "react-router-dom"
 
 export default function AppSidebar() {
   const [user, setUser] = useState({})
   const [open, setOpen] = useState(false)
   const [dailyScore, setDailyScore] = useState(0)
   const { cycles, loading } = useCycle()
+
+  const { logout } = useAuthToken()
+
+  const navigate = useNavigate()
 
   useEffect(() => {
     try {
@@ -46,6 +54,11 @@ export default function AppSidebar() {
       console.error(error)
     }
   }, [])
+
+  const handleLogout = () => {
+    logout()
+    navigate("/")
+  }
 
   if (loading) {
     return <div>Loading cycles...</div>
@@ -95,7 +108,9 @@ export default function AppSidebar() {
                   </div>
                 ) : (
                   <>
-                    <p className='text-neutral-400'>No cycles found. Create one to get started!</p>
+                    <p className='text-neutral-400'>
+                      No cycles found. Create one to get started!
+                    </p>
                   </>
                 )}
                 <Dialog open={open} onOpenChange={setOpen}>
@@ -123,6 +138,15 @@ export default function AppSidebar() {
             </span>
           </SidebarGroupLabel>
         </SidebarGroup>
+        <Separator />
+        <SidebarFooter>
+          <button
+            className='flex gap-3 text-sm items-center px-4 py-2 text-neutral-400 hover:text-lime-400 font-bold'
+            onClick={handleLogout}
+          >
+            Sign out <LogOut size={15} />
+          </button>
+        </SidebarFooter>
       </SidebarContent>
     </Sidebar>
   )
