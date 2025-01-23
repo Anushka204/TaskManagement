@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { format } from "date-fns"
 import CreateTaskModal from "./CreateTaskModal"
 import Task from "./Task"
 import { useCycle } from "../../context/CycleContext"
@@ -7,6 +8,14 @@ import { Separator } from "@/components/ui/separator"
 import { Plus } from "lucide-react"
 import { TABS } from "../../constants/dashboard"
 import { Dialog, DialogTrigger } from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
+import { Calendar } from "@/components/ui/calendar"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import { CalendarIcon } from "lucide-react"
 
 export default function Day({ setCurrentTab }) {
   const { currentCycle } = useCycle()
@@ -58,14 +67,31 @@ export default function Day({ setCurrentTab }) {
         <span>Execution Score: {dailyScore}%</span>
       </div>
       <div className='my-5'>
-        <label>Change Date:</label>
-        <input
-          className='bg-neutral-100 rounded-lg p-2 w-full'
-          type='date'
-          value={new Date(dueDate).toISOString().split("T")[0]}
-          onChange={(e) => setDueDate(new Date(e.target.value))}
-          required
-        />
+        <label>Select day:</label>
+        <Popover modal={true}>
+          <PopoverTrigger asChild>
+            <Button
+              variant={"outline"}
+              className='bg-neutral-800 hover:bg-neutral-800 mt-3 border-neutral-700 text-neutral-100 hover:text-neutral-100 rounded-lg p-2 w-full'
+            >
+              {dueDate ? (
+                format(dueDate, "PPP")
+              ) : (
+                <span>Pick a date</span>
+              )}
+              <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className='w-auto p-0' align='start'>
+            <Calendar
+              mode='single'
+              selected={dueDate}
+              onSelect={(value) => setDueDate(value)}
+              initialFocus
+              asChild
+            />
+          </PopoverContent>
+        </Popover>
       </div>
       <div className='w-full grid grid-cols-3 gap-3'>
         <div className='w-full rounded-lg'>
