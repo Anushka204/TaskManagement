@@ -13,7 +13,7 @@ const Dashboard = () => {
   const [currentTab, setCurrentTab] = useState(TABS.OVERVIEW)
 
   return (
-    <div className="h-screen flex">
+    <div className='h-screen flex'>
       <SidebarProvider>
         <AppSidebar></AppSidebar>
         <main className='w-full h-full flex flex-col bg-neutral-950 p-2'>
@@ -22,7 +22,7 @@ const Dashboard = () => {
             <Tabs
               value={currentTab}
               onValueChange={setCurrentTab}
-              className='w-full h-full'
+              className='w-full h-full flex flex-col'
             >
               <TabsList className='p-3 mb-2 py-5 w-full gap-3 bg-neutral-900 border border-neutral-800'>
                 <TabsTrigger value={TABS.OVERVIEW}>Overview</TabsTrigger>
@@ -30,13 +30,13 @@ const Dashboard = () => {
                 <TabsTrigger value={TABS.WEEK}>This Week</TabsTrigger>
                 <TabsTrigger value={TABS.CYCLE}>This Cycle</TabsTrigger>
               </TabsList>
-              <TabsContent value={TABS.CYCLE}>
+              <TabsContent className="h-full" value={TABS.CYCLE}>
                 <Cycle />
               </TabsContent>
-              <TabsContent value={TABS.DAY}>
+              <TabsContent className="h-full" value={TABS.DAY}>
                 <Day setCurrentTab={setCurrentTab}></Day>
               </TabsContent>
-              <TabsContent value={TABS.OVERVIEW}>
+              <TabsContent className="h-full" value={TABS.OVERVIEW}>
                 <Overview setCurrentTab={setCurrentTab} />
               </TabsContent>
               <TabsContent value={TABS.WEEK}>
