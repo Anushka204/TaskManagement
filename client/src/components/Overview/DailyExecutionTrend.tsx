@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react"
 import { useCycle } from "../../context/CycleContext"
 import { getDailyTrend } from "../../services/dailyScoreService"
-import Heatmap from "../ui/charts/Heatmap"
 import { Separator } from "../ui/separator"
 
 const colors = [
