@@ -8,8 +8,11 @@ import { useCycle } from "../../context/CycleContext"
 
 const Overview = ({ setCurrentTab }) => {
   const { currentCycle } = useCycle()
+  const { goals } = currentCycle
 
-  const completedGoals = currentCycle?.goals.filter(
+  const resolvedGoals = JSON.parse(JSON.stringify(goals))
+
+  const completedGoals = resolvedGoals.filter(
     (goal) => goal.status === "completed"
   ).length
 
@@ -39,7 +42,7 @@ const Overview = ({ setCurrentTab }) => {
           <VisionBoard setCurrentTab={setCurrentTab} />
         </div>
         <div className='col-span-4 row-span-2 row-start-3'>
-          <PendingTasks />
+          <PendingTasks setCurrentTab={setCurrentTab} />
         </div>
       </div>
     </div>

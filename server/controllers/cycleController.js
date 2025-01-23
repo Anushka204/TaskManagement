@@ -1,12 +1,17 @@
 import Cycle from "../models/Cycle.js"
 import Goal from "../models/Goal.js"
+import cycleBlueprint from "../blueprints/cycleBlueprint.js"
 
 export const getCycles = async (req, res) => {
   try {
     const userId = req.user.userId
     const cycles = await Cycle.find({ userId }).populate("goals")
 
-    res.status(200).json(cycles)
+    const data = cycles.map((cycle) => {
+      return cycleBlueprint(cycle)
+    })
+
+    res.send(data).status(200)
   } catch (error) {
     res.status(500).json({ message: error.message })
   }
@@ -28,7 +33,7 @@ export const createCycle = async (req, res) => {
     })
 
     await newCycle.save()
-    res.status(201).json(newCycle)
+    res.send(cycleBlueprint(newCycle)).status(201)
   } catch (error) {
     res.status(500).json({ message: error.message })
   }
@@ -61,7 +66,7 @@ export const updateCycle = async (req, res) => {
       { _id: cycleId, userId: req.user.userId },
       req.body,
       { new: true }
-    )
+    ).populate("goals")
 
     if (!cycle) {
       return res
@@ -69,7 +74,7 @@ export const updateCycle = async (req, res) => {
         .json({ message: "Cycle not found or not authorized" })
     }
 
-    res.status(200).json(cycle)
+    res.send(cycleBlueprint(cycle)).status(200)
   } catch (error) {
     res.status(500).json({ message: error.message })
   }

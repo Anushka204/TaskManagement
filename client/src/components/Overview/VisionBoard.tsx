@@ -5,11 +5,11 @@ import {
   Dialog,
   DialogTrigger,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
 import { useCycle } from "../../context/CycleContext"
 import { DialogClose } from "../ui/dialog"
 import { TABS } from "../../constants/dashboard"
@@ -18,6 +18,7 @@ import { Separator } from "../ui/separator"
 const VisionBoard = ({ setCurrentTab }) => {
   const { currentCycle, updateCycle } = useCycle()
   const [image, setImage] = useState(currentCycle?.visionBoardImage || "")
+  console.log(currentCycle)
 
   useEffect(() => {
     setImage(currentCycle?.visionBoardImage || "")
@@ -33,32 +34,38 @@ const VisionBoard = ({ setCurrentTab }) => {
 
   const dialog = (
     <Dialog>
-      <DialogTrigger className='h-full w-full cursor-pointer flex flex-col gap-3 justify-center items-center'>
+      <DialogTrigger className='h-full w-full cursor-pointer text-neutral-500  hover:text-lime-400 flex flex-col gap-3 justify-center items-center'>
         <div className='bg-neutral-800 text-lime-400 p-5 rounded-full'>
           <Image />
         </div>
-        <span className='text-sm font-bold text-neutral-500 flex items-center'>
+        <span className='text-sm font-bold flex items-center'>
           <Plus className='h-4' /> Add your vision board
         </span>
       </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
+      <DialogContent className='bg-neutral-900 border border-neutral-800 text-neutral-100 rounded-lg p-6'>
+        <DialogHeader className='text-lg text-lime-400 uppercase lexend-giga-700'>
           <DialogTitle>Create Vision Board</DialogTitle>
         </DialogHeader>
-        <Input
-          type='url'
-          placeholder='Enter vision board image url here'
-          className='bg-neutral-100 rounded-lg p-2 w-full'
-          value={image}
-          onChange={(e) => setImage(e.target.value)}
-        />
+        <Separator className='my-3' />
+        <div>
+          <Label htmlFor='title' className='text-xs text-neutral-400'>
+            Enter the URL to your vision board image:
+          </Label>
+          <Input
+            type='url'
+            placeholder='https://'
+            className='bg-neutral-800 mt-3 border-neutral-700 text-neutral-100 rounded-lg p-2 w-full'
+            value={image}
+            onChange={(e) => setImage(e.target.value)}
+          />
+        </div>
         <DialogFooter>
           <div className='flex justify-end gap-2'>
             <DialogClose>
               <button
                 type='submit'
                 onClick={handleAddVisionBoard}
-                className='px-4 py-2 bg-blue-500 hover:bg-blue-600 hover:drop-shadow-lg transition-all text-white font-bold rounded-lg'
+                className='text-sm px-4 py-2 bg-lime-400 text-neutral-900 lexend-giga-700 uppercase font-bold rounded-lg'
               >
                 Save
               </button>
@@ -90,7 +97,7 @@ const VisionBoard = ({ setCurrentTab }) => {
               </h4>
               {currentCycle.goals?.splice(0, 3).map((goal) => (
                 <div
-                  key={goal.id}
+                  key={goal._id}
                   className='my-2 bg-neutral-100 rounded-full px-4 py-2'
                 >
                   <span className='font-bold text-sm text-neutral-800'>
@@ -104,7 +111,7 @@ const VisionBoard = ({ setCurrentTab }) => {
                     No goals added yet!
                   </span>
                   <button
-                    className='flex gap-2 items-center my-5 px-4 py-1 bg-lime-300 font-bold rounded-full uppercase legend-giga-700 text-xs'
+                    className='flex gap-2 items-center my-5 px-4 py-1 bg-lime-400 font-bold rounded-full uppercase legend-giga-700 text-xs'
                     onClick={() => setCurrentTab(TABS.CYCLE)}
                   >
                     <Plus className='h-6 rounded-full p-1' />
@@ -115,7 +122,7 @@ const VisionBoard = ({ setCurrentTab }) => {
             </div>
           </div>
         ) : (
-          <div className='relative cursor-pointer w-full h-full rounded-lg border border-dashed border-neutral-400 bg-neutral-50 hover:bg-neutral-100 flex gap-3 flex-col justify-center items-center'>
+          <div className='relative cursor-pointer w-full h-full rounded-lg border border-dashed border-neutral-700 bg-neutral-950 flex gap-3 flex-col justify-center items-center'>
             {dialog}
           </div>
         )}

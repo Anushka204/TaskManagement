@@ -5,7 +5,7 @@ import {
   getCycles,
   updateCycle as updateCycleApi,
 } from "../services/cycleService"
-import { ACTIONS, cycleReducer, initialState } from '../reducers/cycleReducer'
+import { ACTIONS, cycleReducer, initialState } from "../reducers/cycleReducer"
 
 const CycleContext = createContext()
 
@@ -24,9 +24,10 @@ export const CycleProvider = ({ children }) => {
     dispatch({ type: ACTIONS.SET_LOADING, payload: true })
     try {
       const data = await getCycles()
-      dispatch({ type: ACTIONS.SET_CYCLES, payload: data })
+      dispatch({ type: ACTIONS.SET_CYCLES, payload: JSON.parse(JSON.stringify(data)) })
     } catch (error) {
       console.error("Error fetching cycles:", error)
+      dispatch({ type: ACTIONS.SET_ERROR, payload: error.message })
     }
     dispatch({ type: ACTIONS.SET_LOADING, payload: false })
   }

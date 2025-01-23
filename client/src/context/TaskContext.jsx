@@ -1,6 +1,11 @@
 import { createContext, useReducer, useContext, useEffect } from "react"
-import { getTasks, deleteTask } from "../../services/taskService"
-import { getDailyScore } from "../../services/dailyScoreService"
+import { getTasks, deleteTask } from "@/services/taskService"
+import { getDailyScore } from "@/services/dailyScoreService"
+import taskReducer, { initialState } from "@/reducers/tasksReducer"
+import {
+  createTask as createTaskApi,
+  updateTask as updateTaskApi,
+} from "@/services/taskService"
 
 const TaskContext = createContext()
 
@@ -12,11 +17,9 @@ export const useTask = () => {
   return context
 }
 
-// Provider component
 export const TaskProvider = ({ children }) => {
   const [state, dispatch] = useReducer(taskReducer, initialState)
 
-  // Fetch tasks whenever the dueDate changes
   useEffect(() => {
     const fetchTasks = async () => {
       try {
@@ -31,7 +34,6 @@ export const TaskProvider = ({ children }) => {
     fetchTasks()
   }, [state.dueDate])
 
-  // Fetch daily score whenever the tasks or dueDate change
   useEffect(() => {
     const fetchDailyScore = async () => {
       try {
@@ -46,9 +48,9 @@ export const TaskProvider = ({ children }) => {
     fetchDailyScore()
   }, [state.tasks, state.dueDate])
 
-  // Actions
-  const addTask = (newTask) => {
-    dispatch({ type: "ADD_TASK", payload: newTask })
+  const addTask = async (newTask) => {
+    const data = await createTaskApi(newTask)
+    dispatch({ type: "ADD_TASK", payload: data.task })
   }
 
   const removeTask = async (taskId) => {
@@ -60,8 +62,9 @@ export const TaskProvider = ({ children }) => {
     }
   }
 
-  const updateTask = (updatedTask) => {
-    dispatch({ type: "UPDATE_TASK", payload: updatedTask })
+  const updateTask = async (updatedTask) => {
+    const data = await updateTaskApi(updatedTask)
+    dispatch({ type: "UPDATE_TASK", payload: data.task })
   }
 
   const setDueDate = (date) => {

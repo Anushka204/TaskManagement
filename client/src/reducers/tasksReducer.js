@@ -29,3 +29,5 @@ export const taskReducer = (state, action) => {
       throw new Error(`Unhandled action type: ${action.type}`)
   }
 }
+
+export default taskReducer

@@ -9,6 +9,7 @@ import PrivateRoute from "./routes/PrivateRoute.jsx"
 import Dashboard from "./pages/Dashboard.tsx"
 import { CycleProvider } from "./context/CycleContext.jsx"
 import { Toaster } from "@/components/ui/toaster.tsx"
+import { TaskProvider } from "./context/TaskContext.jsx"
 
 const router = createBrowserRouter([
   {
@@ -23,9 +24,11 @@ const router = createBrowserRouter([
     path: "/dashboard",
     element: (
       <PrivateRoute>
-        <CycleProvider>
-          <Dashboard />
-        </CycleProvider>
+        <TaskProvider>
+          <CycleProvider>
+            <Dashboard />
+          </CycleProvider>
+        </TaskProvider>
       </PrivateRoute>
     ),
   },

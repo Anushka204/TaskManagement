@@ -1,5 +1,6 @@
 import express from "express"
 import {
+  getGoals,
   createGoal,
   deleteGoal,
   updateGoal,
@@ -7,6 +8,8 @@ import {
 import { verifyToken } from "../middleware/auth.js"
 
 const router = express.Router()
+
+router.get("/", verifyToken, getGoals)
 
 router.post("/", verifyToken, createGoal)
 

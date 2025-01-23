@@ -34,7 +34,7 @@ const Dashboard = () => {
                 <Cycle />
               </TabsContent>
               <TabsContent value={TABS.DAY}>
-                <Day></Day>
+                <Day setCurrentTab={setCurrentTab}></Day>
               </TabsContent>
               <TabsContent value={TABS.OVERVIEW}>
                 <Overview setCurrentTab={setCurrentTab} />

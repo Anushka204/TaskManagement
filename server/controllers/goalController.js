@@ -1,6 +1,20 @@
 import Goal from "../models/Goal.js"
 import Cycle from "../models/Cycle.js"
 import Tactic from "../models/Tactic.js"
+import goalBlueprint from "../blueprints/goalBlueprint.js"
+
+export const getGoals = async (req, res) => {
+  try {
+    const { cycleId } = req.query
+    const goals = await Goal.find({ userId: req.user.userId, cycleId })
+    const data = goals.map((goal) => {
+      return goalBlueprint(goal)
+    })
+    res.status(200).json(data)
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+}
 
 export const createGoal = async (req, res) => {
   try {
@@ -48,9 +62,10 @@ export const createGoal = async (req, res) => {
     cycle.goals.push(newGoal._id)
     await cycle.save()
 
-    res
-      .status(201)
-      .json({ message: "Goal created and added to cycle", goal: newGoal })
+    res.status(201).json({
+      message: "Goal created and added to cycle",
+      goal: goalBlueprint(newGoal),
+    })
   } catch (error) {
     res.status(500).json({ message: error.message })
   }
@@ -95,7 +110,9 @@ export const updateGoal = async (req, res) => {
         .status(404)
         .json({ message: "Goal not found or not authorized" })
     }
-    res.status(200).json({ message: "Goal updated successfully", goal })
+    res
+      .status(200)
+      .json({ message: "Goal updated successfully", goal: goalBlueprint(goal) })
   } catch (error) {
     res.status(500).json({ message: error.message })
   }

@@ -60,7 +60,9 @@ export default function AppSidebar() {
             style={{ backgroundImage: `url('${user?.profilePicture}')` }}
           ></div>
           <div className='w-9/12 flex flex-col justify-between'>
-            <span className='font-bold lexend-giga-700 text-xs'>{user?.username || user?.email}</span>
+            <span className='font-bold lexend-giga-700 text-xs'>
+              {user?.username || user?.email}
+            </span>
             <div className=''>
               <span className='text-xs font-bold text-neutral-400'>
                 Today's Execution Score

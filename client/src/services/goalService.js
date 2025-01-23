@@ -1,5 +1,10 @@
 import { apiClient } from "./apiClient"
 
+export const getGoals = async (cycleId) => {
+  const response = await apiClient.get("/goals", { params: { cycleId } })
+  return response.data
+}
+
 export const createGoal = async (goal) => {
   const response = await apiClient.post("/goals", goal)
   return response.data

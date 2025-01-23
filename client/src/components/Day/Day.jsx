@@ -1,70 +1,43 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import CreateTaskModal from "./CreateTaskModal"
 import Task from "./Task"
-import { getTasks, deleteTask } from "../../services/taskService"
-import { getDailyScore } from "../../services/dailyScoreService"
-import { useCycle } from '../../context/CycleContext'
+import { useCycle } from "../../context/CycleContext"
+import { useTask } from "../../context/TaskContext"
+import { Separator } from "@/components/ui/separator"
+import { Plus } from "lucide-react"
+import { TABS } from "../../constants/dashboard"
+import { Dialog, DialogTrigger } from "@/components/ui/dialog"
 
-export default function Day() {
+export default function Day({ setCurrentTab }) {
   const { currentCycle } = useCycle()
-  const [tasks, setTasks] = useState([])
-  const [showModal, setShowModal] = useState(false)
-  const [dueDate, setDueDate] = useState(new Date())
-  const [dailyScore, setDailyScore] = useState(0)
-
-  const fetchDailyScore = async (d) => {
-    try {
-      const data = await getDailyScore(d)
-      setDailyScore(data.executionScore)
-    } catch (error) {
-      console.error(error)
-    }
-  }
-
-  useEffect(() => {
-    const date = dueDate.toISOString().split("T")[0]
-    const fetchTasks = async () => {
-      try {
-        const data = await getTasks(date)
-        setTasks(data.tasks)
-      } catch (error) {
-        console.error(error)
-      }
-    }
-
-    fetchTasks()
-  }, [dueDate])
-
-  useEffect(() => {
-    const date = dueDate.toISOString().split("T")[0]
-    fetchDailyScore(date)
-  }, [tasks, dueDate])
-
-  const addTask = (newTask) => {
-    if (
-      dueDate.toISOString().split("T")[0] ===
-      new Date(newTask.dueDate).toISOString().split("T")[0]
-    ) {
-      setTasks([...tasks, newTask])
-    }
-  }
-
-  const removeTask = async (taskId) => {
-    await deleteTask(taskId)
-    setTasks(tasks.filter((task) => task._id !== taskId))
-  }
-
-  const updateTasks = (task) => {
-    setTasks(tasks.map((t) => (t._id === task._id ? task : t)))
-  }
+  const {
+    tasks,
+    addTask,
+    dailyScore,
+    removeTask,
+    updateTask,
+    dueDate,
+    setDueDate,
+  } = useTask()
+  const [open, setOpen] = useState(false)
 
   if (currentCycle.goals.length === 0) {
     return (
-      <div className='bg-neutral-200 rounded-lg p-4'>
-        <h2 className='text-xl uppercase flex items-center'>Today</h2>
-        <p className='text-neutral-400'>
+      <div className='bg-neutral-900 border border-neutral-800 text-neutral-100 rounded-lg p-6'>
+        <h2 className='text-xl text-lime-400 uppercase lexend-giga-700 flex items-center'>
+          Today
+        </h2>
+        <p className='text-neutral-400 text-xs my-3'>
           No goals found. Please create a goal to get started.
         </p>
+        <Separator />
+        <button
+          className='flex gap-2 items-center my-5 px-4 py-1 bg-lime-400 text-neutral-900 font-bold rounded-full uppercase legend-giga-700 text-xs'
+          onClick={() => setCurrentTab(TABS.CYCLE)}
+        >
+          <Plus className='h-6 rounded-full p-1' />
+          Add Cycle Goals
+        </button>
       </div>
     )
   }
@@ -74,7 +47,7 @@ export default function Day() {
   const inProgressTasks = tasks.filter((task) => task.status === "in-progress")
 
   return (
-    <div className='bg-neutral-200 rounded-lg p-4'>
+    <div className='bg-neutral-900 border border-neutral-800 text-neutral-100 rounded-lg p-6'>
       <div className='flex justify-between'>
         <h2 className='text-xl uppercase flex items-center'>
           Today{" "}
@@ -103,7 +76,7 @@ export default function Day() {
               key={task._id}
               cycleId={currentCycle._id}
               deleteTask={removeTask}
-              updateTasks={updateTasks}
+              updateTask={updateTask}
               goals={currentCycle.goals}
             />
           ))}
@@ -116,7 +89,7 @@ export default function Day() {
               key={task._id}
               cycleId={currentCycle._id}
               deleteTask={removeTask}
-              updateTasks={updateTasks}
+              updateTask={updateTask}
               goals={currentCycle.goals}
             />
           ))}
@@ -129,27 +102,30 @@ export default function Day() {
               key={task._id}
               cycleId={currentCycle._id}
               deleteTask={removeTask}
-              updateTasks={updateTasks}
+              updateTask={updateTask}
               goals={currentCycle.goals}
             />
           ))}
         </div>
       </div>
       <div>
-        <button
-          onClick={() => setShowModal(true)}
-          className='mt-5 px-4 py-2 bg-blue-500 hover:bg-blue-600 hover:drop-shadow-lg transition-all text-white font-bold rounded-lg'
-        >
-          Create New Task
-        </button>
-        {showModal && (
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger asChild>
+            <button
+              onClick={() => setOpen(true)}
+              className='flex items-center gap-2 text-sm mt-5 px-4 py-2 text-neutral-900 bg-lime-400 hover:drop-shadow-lg transition-all font-bold rounded-md lexend-giga-700 uppercase'
+            >
+              <Plus />
+              <span>Create New Task</span>
+            </button>
+          </DialogTrigger>
           <CreateTaskModal
             cycleId={currentCycle._id}
             goals={currentCycle.goals}
-            hideModal={() => setShowModal(false)}
+            hideModal={() => setOpen(false)}
             addTask={addTask}
           ></CreateTaskModal>
-        )}
+        </Dialog>
       </div>
     </div>
   )
