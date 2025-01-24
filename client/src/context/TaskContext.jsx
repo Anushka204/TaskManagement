@@ -63,8 +63,16 @@ export const TaskProvider = ({ children }) => {
   }
 
   const updateTask = async (updatedTask) => {
-    const data = await updateTaskApi(updatedTask)
-    dispatch({ type: "UPDATE_TASK", payload: data.task })
+    dispatch({ type: "UPDATE_TASK", payload: updatedTask })
+    try {
+      const data = await updateTaskApi(updatedTask)
+      dispatch({ type: "UPDATE_TASK", payload: data.task })
+    } catch (error) {
+      const originalTask = state.tasks.find(t => t._id === updatedTask._id)
+      if (originalTask) {
+        dispatch({ type: "UPDATE_TASK", payload: originalTask })
+      }
+    }
   }
 
   const setDueDate = (date) => {
