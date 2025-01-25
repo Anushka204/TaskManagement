@@ -2,12 +2,23 @@ import { useState } from "react"
 import CreateTaskModal from "./CreateTaskModal"
 import { Plus } from "lucide-react"
 import { Dialog, DialogTrigger } from "@/components/ui/dialog"
+import { useDrag } from "react-dnd"
 
 export default function Task({ cycleId, task, deleteTask, goals, updateTask }) {
   const [open, setOpen] = useState(false)
 
+  const [{ isDragging }, drag] = useDrag(() => ({
+    type: 'task',
+    item: { task },
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+  }))
+
   return (
     <div
+      ref={drag}
+      style={{ opacity: isDragging ? 0.5 : 1, cursor: 'move' }}
       className='bg-gradient-to-br from-neutral-900 to-neutral-950 border border-neutral-800 text-neutral-100 text-sm rounded-lg p-2 my-2'
       key={task._id}
     >
