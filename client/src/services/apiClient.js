@@ -1,12 +1,13 @@
 import axios from "axios"
 
 export const apiClient = axios.create({
-  baseURL: "http://localhost:3000/api",
+  baseURL: "https://taskmanagement-fzdx.onrender.com/api",
   headers: {
     Accept: "application/json",
     "Content-Type": "application/json",
   },
 })
+
 
 apiClient.interceptors.request.use(
   (config) => {

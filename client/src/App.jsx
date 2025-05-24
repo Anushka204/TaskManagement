@@ -15,7 +15,8 @@ function App() {
   }, [isAuthenticated])
 
   const loginWithGoogle = async () => {
-    window.location.href = `http://localhost:3000/auth/google`
+ window.location.href = `https://taskmanagement-fzdx.onrender.com/auth/google`
+
   }
 
   return (
